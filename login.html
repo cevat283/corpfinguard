@@ -180,12 +180,12 @@
         <form id="loginForm">
             <div class="form-group">
                 <label for="email">Email</label>
-                <input type="email" id="email" placeholder="ornek@sirket.com" required>
+                <input type="email" id="email" placeholder="ornek@sirket.com" required autocomplete="email">
             </div>
 
             <div class="form-group">
                 <label for="password">Şifre</label>
-                <input type="password" id="password" placeholder="••••••••" required>
+                <input type="password" id="password" placeholder="••••••••" required autocomplete="current-password">
             </div>
 
             <button type="submit" class="btn-login" id="loginBtn">
@@ -200,8 +200,8 @@
         <div class="divider">veya</div>
 
         <div class="links">
-            <a href="mailto:info@corpfinguard.com?subject=Beta%20Erişimi%20Talebi">
-                📧 Beta Erişimi İçin İletişime Geçin
+            <a href="signup.html">
+                🚀 Hesabınız yok mu? Abone Olun
             </a>
         </div>
 
@@ -214,7 +214,7 @@
     <script type="module">
         // Firebase imports
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-        import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
 
         // Firebase Configuration
         const firebaseConfig = {
@@ -278,7 +278,7 @@
                 console.log('Login successful:', user.email);
                 showSuccess('✅ Giriş başarılı! Yönlendiriliyorsunuz...');
                 
-                // Redirect to app.html
+                // Redirect to app.html after successful login
                 setTimeout(() => {
                     window.location.href = 'app.html';
                 }, 1000);
@@ -336,13 +336,8 @@
             }
         });
 
-        // Check if already logged in
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                console.log('User already logged in, redirecting...');
-                window.location.href = 'app.html';
-            }
-        });
+        // NO AUTO-REDIRECT - User must login explicitly
+        // This is intentional for Beta version
     </script>
 </body>
 </html>
