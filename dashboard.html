@@ -409,13 +409,13 @@
             </div>
         </div>
  <!-- Çıkış Butonu -->
-    <div style="position: absolute; top: 20px; right: 20px;">
-    <button onclick="logout()" style="background: #dc3545; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 14px; box-shadow: 0 2px 8px rgba(220,53,69,0.3);">
-        🚪 Çıkış
-    </button>
-</div>
-       <div class="upload-section">
-   !-- Beta Üye Bildirimi -->
+    <div style="text-align: right; padding: 15px 30px; background: white; border-bottom: 1px solid #dee2e6;">
+        <button onclick="logout()" style="background: linear-gradient(135deg, #dc3545 0%, #c82333 100%); color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 14px; transition: all 0.3s;">
+            🚪 Çıkış Yap
+        </button>
+    </div>
+        <div class="upload-section">
+    <!-- Beta Üye Bildirimi -->
     <div style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white; padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 30px;">
         <h3 style="margin: 0 0 10px 0;">✅ Beta Üyeliğiniz Aktif</h3>
         <p style="margin: 0; opacity: 0.9;">Sınırsız analiz yapabilir, Excel dosyalarınızı yükleyebilirsiniz</p>
@@ -426,7 +426,7 @@
         <h2>📊 Mizan Dosyalarını Yükleyin</h2>
         <p>Excel dosyalarınızı buraya sürükleyin veya tıklayın</p>
         <small>En az 2 yıl, ideal 3-4 yıl mizan verisi yükleyin</small>
-        <input type="file" id="fileInput" multiple accept=".xlsx,.xls" style="display: block; margin: 20px auto; padding: 10px;">
+        <input type="file" id="fileInput" multiple accept=".xlsx,.xls" style="display: none;">
     </div>
     <div id="fileList"></div>
     <button class="analyze-btn" onclick="startAnalysis()">🚀 Analizi Başlat</button>
@@ -3216,9 +3216,78 @@ function logout() {
     }
 }
 
-// File upload handlers
-const uploadArea = document.getElementById('uploadArea');
-const fileInput = document.getElementById('fileInput');
+/ ============= FILE UPLOAD HANDLERS =============
+const uploadAreaEl = document.getElementById('uploadArea');
+const fileInputEl = document.getElementById('fileInput');
+
+if (uploadAreaEl && fileInputEl) {
+    // Click to open file dialog
+    uploadAreaEl.addEventListener('click', (e) => {
+        if (e.target.tagName !== 'INPUT') {
+            fileInputEl.click();
+        }
+    });
+
+    // Drag and drop
+    uploadAreaEl.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadAreaEl.style.background = '#f0f4ff';
+        uploadAreaEl.style.borderColor = '#667eea';
+    });
+
+    uploadAreaEl.addEventListener('dragleave', (e) => {
+        e.preventDefault();
+        uploadAreaEl.style.background = 'white';
+        uploadAreaEl.style.borderColor = '#667eea';
+    });
+
+    uploadAreaEl.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadAreaEl.style.background = 'white';
+        uploadAreaEl.style.borderColor = '#667eea';
+        
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            fileInputEl.files = files;
+            handleFiles(files);
+        }
+    });
+
+    // File input change
+    fileInputEl.addEventListener('change', (e) => {
+        handleFiles(e.target.files);
+    });
+}
+
+// ============= LOGOUT FUNCTION =============
+function logout() {
+    if (confirm('Çıkış yapmak istediğinize emin misiniz?')) {
+        // Clear all data
+        localStorage.clear();
+        sessionStorage.clear();
+        
+        // Redirect to login
+        window.location.href = 'login.html';
+    }
+}
+
+// ============= INITIALIZATION =============
+window.addEventListener('DOMContentLoaded', function() {
+    console.log('Dashboard loaded successfully');
+    console.log('Upload area:', uploadAreaEl);
+    console.log('File input:', fileInputEl);
+    
+    // Check for saved data
+    const savedData = localStorage.getItem('corpfinguard_data');
+    if (savedData) {
+        const data = JSON.parse(savedData);
+        if (confirm('Daha önce kaydedilmiş veri bulundu. Yüklemek ister misiniz?')) {
+            parsedData = data.parsedData;
+            generateReport(parsedData);
+            document.getElementById('reportSection').style.display = 'block';
+        }
+    }
+});
 
     </script>
 </body>
