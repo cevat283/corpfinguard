@@ -414,6 +414,9 @@
             🚪 Çıkış Yap
         </button>
     </div>
+      <div style="text-align: right; padding: 15px; background: white;">
+    <button onclick="logout()" style="background: #dc3545; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">🚪 Çıkış</button>
+</div>
         <div class="upload-section">
     <!-- Beta Üye Bildirimi -->
     <div style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white; padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 30px;">
@@ -3288,7 +3291,11 @@ window.addEventListener('DOMContentLoaded', function() {
         }
     }
 });
-
+function logout() {
+    if (confirm('Çıkış?')) {
+        window.location.href = 'login.html';
+    }
+}
     </script>
 </body>
 </html>
