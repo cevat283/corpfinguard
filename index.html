@@ -6,12 +6,12 @@
     <title>Corpfinguard - Finansal Risk Analiz Platformu | AI Destekli İflas Tahmini</title>
     
     <!-- SEO Meta Tags -->
-    <meta name="description" content="Yapay zeka destekli finansal risk analizi. 5 dakikada şirketinizin finansal sağlığını analiz edin. Altman Z-Score, fraud tespiti, iflas tahmini.">
+    <meta name="description" content="Şirketiniz iflas riskinde mi? 5 dakikada öğrenin! AI destekli finansal risk analizi, iflas tahmini, fraud tespiti.">
     <meta name="keywords" content="finansal analiz, risk yönetimi, iflas tahmini, altman z-score, mali analiz, KOBİ, Türkiye">
     
     <!-- Open Graph -->
-    <meta property="og:title" content="Corpfinguard - AI Destekli Finansal Risk Analizi">
-    <meta property="og:description" content="5 dakikada şirketinizin finansal sağlığını öğrenin. İflas riski, fraud tespiti, profesyonel raporlar.">
+    <meta property="og:title" content="Corpfinguard - Şirketiniz İflas Riskinde mi?">
+    <meta property="og:description" content="5 dakikada finansal sağlığınızı öğrenin. İflas riski, fraud tespiti, AI destekli analiz.">
     <meta property="og:url" content="https://corpfinguard.com">
     
     <!-- Fonts -->
@@ -109,6 +109,9 @@
             font-size: 24px;
             margin-bottom: 40px;
             opacity: 0.95;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         .cta-buttons {
@@ -137,15 +140,15 @@
             box-shadow: 0 15px 40px rgba(255,255,255,0.3);
         }
 
-        .btn-outline {
-            background: transparent;
+        .btn-demo {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
             color: white;
-            border: 2px solid white;
+            border: none;
         }
 
-        .btn-outline:hover {
-            background: white;
-            color: #667eea;
+        .btn-demo:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 40px rgba(40, 167, 69, 0.4);
         }
 
         /* Stats */
@@ -227,6 +230,29 @@
         .feature-desc {
             color: #666;
             line-height: 1.8;
+        }
+
+        /* Dashboard Preview */
+        .dashboard-preview {
+            background: #f8f9fa;
+            padding: 100px 20px;
+        }
+
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .dashboard-img {
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            margin-bottom: 40px;
+        }
+
+        .dashboard-img img {
+            width: 100%;
+            display: block;
         }
 
         /* Pricing */
@@ -416,19 +442,20 @@
             <div class="nav-links">
                 <a href="#features">Özellikler</a>
                 <a href="#pricing">Fiyatlar</a>
+                <a href="app.html">Demo</a>
                 <a href="#contact">İletişim</a>
-                <a href="login.html" class="btn-primary">Giriş Yap / Abone Ol</a> class="btn-primary">Beta Erişimi</a>
+                <a href="signup.html" class="btn-primary">Abone Ol</a>
             </div>
         </nav>
     </header>
 
     <!-- Hero -->
     <section class="hero">
-        <h1>Finansal Riskinizi<br>5 Dakikada Analiz Edin</h1>
-        <p>AI destekli iflas tahmini ve fraud tespiti ile şirketinizi koruyun</p>
+        <h1>Şirketiniz İflas Riskinde mi?<br>5 Dakikada Öğrenin!</h1>
+        <p>AI ile finansal tabloları analiz edin, iflas ve fraud riskini tespit edin, bankalar için rapor hazırlayın</p>
         <div class="cta-buttons">
-            <a href="login.html" class="btn-large btn-white">Giriş Yap / Abone Ol</a>
-            <a href="app.html" class="btn-large btn-outline">Demo'yu Dene</a>
+            <a href="signup.html" class="btn-large btn-white">🚀 Hemen Abone Ol</a>
+            <a href="app.html" class="btn-large btn-demo">🎭 Canlı Demo - Hemen Dene!</a>
         </div>
     </section>
 
@@ -486,6 +513,44 @@
                 <h3 class="feature-title">Profesyonel Raporlar</h3>
                 <p class="feature-desc">Bankalara, yönetim kurullarına sunuma hazır PDF raporlar. Grafikler ve detaylı açıklamalar.</p>
             </div>
+            <div class="feature-card">
+                <div class="feature-icon">🧠</div>
+                <h3 class="feature-title">XAI - Açıklanabilir AI</h3>
+                <p class="feature-desc">Yapay zekanın kararlarını anlayın. Her tahmin için detaylı açıklama, şeffaf analiz, davranışsal finans prensipleri.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🎯</div>
+                <h3 class="feature-title">Davranışsal Finans</h3>
+                <p class="feature-desc">Psikolojik faktörleri analiz eder, insan önyargılarını tespit eder, daha bilinçli karar almanızı sağlar.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔮</div>
+                <h3 class="feature-title">Gelecek Vizyonu</h3>
+                <p class="feature-desc">Logo/e-Defter entegrasyonu, sektör karşılaştırma, real-time monitoring - sürekli gelişen platform.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Dashboard Preview -->
+    <section class="dashboard-preview">
+        <div class="dashboard-container">
+            <h2 class="section-title">📊 Dashboard Görünümü</h2>
+            <p style="text-align: center; color: #666; font-size: 18px; margin-bottom: 50px;">
+                Profesyonel analizler, detaylı raporlar, görsel grafikler
+            </p>
+            <div class="dashboard-img">
+                <!-- Screenshot eklenecek -->
+                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 100px; text-align: center; color: white;">
+                    <h3 style="font-size: 32px; margin-bottom: 20px;">📸 Dashboard Screenshot</h3>
+                    <p style="font-size: 18px; opacity: 0.9;">Yakında eklenecek</p>
+                    <p style="font-size: 14px; opacity: 0.7; margin-top: 10px;">Demo'yu deneyerek şimdi görebilirsiniz!</p>
+                </div>
+            </div>
+            <div style="text-align: center;">
+                <a href="app.html" class="btn-primary" style="padding: 18px 40px; font-size: 18px;">
+                    🎭 Demo'yu Hemen Deneyin
+                </a>
+            </div>
         </div>
     </section>
 
@@ -511,7 +576,7 @@
                 <span class="old-price">₺3,999/ay</span>
                 <div class="plan-price">₺1,999<small>/ay</small></div>
                 <p style="color: #28a745; font-weight: 700; margin: 10px 0;">%50 İNDİRİM - İlk 6 ay</p>
-                <p style="color: #666; font-size: 14px;">Sonrası: ₺3,999/ay </p>
+                <p style="color: #666; font-size: 14px;">Sonrası: ₺2,999/ay (ömür boyu)</p>
                 <ul class="plan-features">
                     <li>Sınırsız analiz</li>
                     <li>Excel upload</li>
@@ -523,7 +588,7 @@
                     <li>Email destek</li>
                     <li>Logo'nuz web sitesinde</li>
                 </ul>
-                <a href="mailto:info@corpfinguard.com?subject=Beta%20Erişimi%20Talebi&body=Merhaba,%0A%0ACorpfinguard%20beta%20programına%20katılmak%20istiyorum.%0A%0AŞirket%20Adı:%0AVergi%20No:%0AEmail:%0ATelefon:%0A%0ATeşekkürler" class="btn-primary">Beta Erişimi İste</a>
+                <a href="signup.html" class="btn-primary">Hemen Abone Ol</a>
             </div>
 
             <div class="pricing-card">
@@ -539,7 +604,7 @@
                     <li>SLA garantisi</li>
                     <li>Dedicated server</li>
                 </ul>
-                <a href="mailto:info@corpfinguard.com?subject=Enterprise%20Teklif%20Talebi" class="btn-primary">Teklif Al</a>
+                <a href="signup.html" class="btn-primary">Teklif Al</a>
             </div>
         </div>
     </section>
@@ -549,11 +614,14 @@
         <h2>Hemen Başlayın</h2>
         <p>Beta programımıza katılın, ilk 50 müşteriden biri olun!</p>
         <div class="contact-buttons">
+            <a href="signup.html" class="btn-contact">
+                🚀 Abone Ol
+            </a>
+            <a href="login.html" class="btn-contact">
+                🔐 Giriş Yap
+            </a>
             <a href="mailto:info@corpfinguard.com" class="btn-contact">
                 📧 info@corpfinguard.com
-            </a>
-            <a href="https://wa.me/905XXXXXXXXX" class="btn-contact" target="_blank">
-                📱 WhatsApp İletişim
             </a>
             <a href="app.html" class="btn-contact">
                 🎭 Demo'yu Dene
@@ -577,6 +645,7 @@
                 <a href="#features">Özellikler</a>
                 <a href="#pricing">Fiyatlar</a>
                 <a href="app.html">Demo</a>
+                <a href="signup.html">Abone Ol</a>
             </div>
             <div class="footer-section">
                 <h3>Şirket</h3>
@@ -587,7 +656,7 @@
             <div class="footer-section">
                 <h3>Destek</h3>
                 <a href="mailto:info@corpfinguard.com">Email Desteği</a>
-                <a href="https://wa.me/905XXXXXXXXX" target="_blank">WhatsApp</a>
+                <a href="login.html">Giriş Yap</a>
             </div>
         </div>
         <div class="footer-bottom">
