@@ -3207,19 +3207,24 @@
                 }
             }
         });
-/ Logout function
+// Logout function
 function logout() {
+    if (confirm('Çıkış yapmak istediğinize emin misiniz?')) {
+        localStorage.clear();
+        sessionStorage.clear();
+        window.location.href = 'login.html';
+    }
+}
+
 // File upload handlers
 const uploadArea = document.getElementById('uploadArea');
 const fileInput = document.getElementById('fileInput');
 
 if (uploadArea && fileInput) {
-    // Click to upload
     uploadArea.addEventListener('click', () => {
         fileInput.click();
     });
 
-    // Drag and drop
     uploadArea.addEventListener('dragover', (e) => {
         e.preventDefault();
         uploadArea.style.borderColor = '#667eea';
@@ -3239,12 +3244,6 @@ if (uploadArea && fileInput) {
         fileInput.files = e.dataTransfer.files;
         fileInput.dispatchEvent(new Event('change'));
     });
-}
-    if (confirm('Çıkış yapmak istediğinize emin misiniz?')) {
-        localStorage.clear();
-        sessionStorage.clear();
-        window.location.href = 'login.html';
-    }
 }
     </script>
 </body>
