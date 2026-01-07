@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Giriş Yap - Corpfinguard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <title>CorpFinGuard - Giriş</title>
     <style>
         * {
             margin: 0;
@@ -13,7 +12,7 @@
         }
 
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             display: flex;
@@ -22,52 +21,45 @@
             padding: 20px;
         }
 
-        .login-container {
+        .login-box {
             background: white;
-            padding: 50px;
+            padding: 40px;
             border-radius: 20px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            max-width: 450px;
+            max-width: 400px;
             width: 100%;
         }
 
-        .logo {
-            font-size: 32px;
-            font-weight: 900;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+        h1 {
             text-align: center;
+            color: #667eea;
             margin-bottom: 10px;
+            font-size: 2em;
         }
 
-        .subtitle {
+        p {
             text-align: center;
-            color: #666;
-            margin-bottom: 40px;
-            font-size: 16px;
+            color: #6c757d;
+            margin-bottom: 30px;
         }
 
         .form-group {
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
 
         label {
             display: block;
+            color: #2c3e50;
+            font-weight: 500;
             margin-bottom: 8px;
-            color: #333;
-            font-weight: 600;
-            font-size: 14px;
         }
 
         input {
             width: 100%;
-            padding: 15px;
+            padding: 12px;
             border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            font-size: 16px;
-            transition: border-color 0.3s;
-            font-family: 'Inter', sans-serif;
+            border-radius: 8px;
+            font-size: 15px;
         }
 
         input:focus {
@@ -75,269 +67,165 @@
             border-color: #667eea;
         }
 
-        .btn-login {
+        button {
             width: 100%;
             padding: 15px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
             border-radius: 10px;
-            font-size: 18px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-
-        .btn-login:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn-login:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .error-message {
-            background: #fee;
-            color: #c33;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            display: none;
-            font-size: 14px;
-            text-align: center;
-        }
-
-        .success-message {
-            background: #efe;
-            color: #3c3;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            display: none;
-            font-size: 14px;
-            text-align: center;
-        }
-
-        .links {
-            margin-top: 25px;
-            text-align: center;
-        }
-
-        .links a {
-            color: #667eea;
-            text-decoration: none;
-            font-size: 14px;
+            font-size: 16px;
             font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 10px;
         }
 
-        .links a:hover {
-            text-decoration: underline;
+        button:hover {
+            opacity: 0.9;
         }
 
-        .divider {
-            text-align: center;
-            margin: 20px 0;
-            color: #999;
+        .demo-btn {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        }
+
+        .info {
+            background: #e7f1ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
             font-size: 14px;
         }
 
-        .back-home {
-            text-align: center;
-            margin-top: 30px;
-        }
-
-        .back-home a {
-            color: #666;
-            text-decoration: none;
-            font-size: 14px;
-        }
-
-        .back-home a:hover {
+        .info strong {
+            display: block;
+            margin-bottom: 5px;
             color: #667eea;
-        }
-
-        @media (max-width: 500px) {
-            .login-container {
-                padding: 30px 20px;
-            }
-            .logo {
-                font-size: 28px;
-            }
         }
     </style>
 </head>
 <body>
-    <div class="login-container">
-        <div class="logo">Corpfinguard</div>
-        <div class="subtitle">Hesabınıza giriş yapın</div>
+    <div class="login-box">
+        <h1>🛡️ CorpFinGuard</h1>
+        <p>Giriş Yapın</p>
 
-        <div id="errorMessage" class="error-message"></div>
-        <div id="successMessage" class="success-message"></div>
+        <div class="info">
+            <strong>Test Hesapları:</strong>
+            E-posta: test@test.com<br>
+            Şifre: test123
+        </div>
 
         <form id="loginForm">
             <div class="form-group">
-                <label for="email">Email</label>
-                <input type="email" id="email" placeholder="ornek@sirket.com" required autocomplete="email">
+                <label for="email">E-posta</label>
+                <input type="email" id="email" value="test@test.com" required>
             </div>
 
             <div class="form-group">
                 <label for="password">Şifre</label>
-                <input type="password" id="password" placeholder="••••••••" required autocomplete="current-password">
+                <input type="password" id="password" value="test123" required>
             </div>
 
-            <button type="submit" class="btn-login" id="loginBtn">
-                🔐 Giriş Yap
-            </button>
+            <button type="submit">🚀 Giriş Yap</button>
         </form>
 
-        <div class="links">
-            <a href="#" id="forgotPassword">Şifremi Unuttum</a>
-        </div>
-
-        <div class="divider">veya</div>
-
-        <div class="links">
-            <a href="signup.html">
-                🚀 Hesabınız yok mu? Abone Olun
-            </a>
-        </div>
-
-        <div class="back-home">
-            <a href="index.html">← Ana Sayfaya Dön</a>
-        </div>
+        <button class="demo-btn" onclick="goDemoMode()">🎭 Demo Modu (Kayıt Gerektirmez)</button>
     </div>
 
-    <!-- Firebase SDK -->
-    <script type="module">
-        // Firebase imports
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-        import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+    <script>
+        console.log('Login sayfası yüklendi');
 
-        // Firebase Configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyDgBgk0fy9oQM0xjXd8_oRtWqoOsAFU0Bo",
-            authDomain: "corpfinguard.firebaseapp.com",
-            projectId: "corpfinguard",
-            storageBucket: "corpfinguard.firebasestorage.app",
-            messagingSenderId: "618478987362",
-            appId: "1:618478987362:web:37bf52cb6b75a53fe6493b"
+        // Test hesapları
+        const accounts = {
+            'test@test.com': { password: 'test123', name: 'Test Kullanıcı', premium: true },
+            'demo@corpfinguard.com': { password: 'demo123', name: 'Demo Kullanıcı', premium: true }
         };
 
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-
-        // DOM elements
-        const loginForm = document.getElementById('loginForm');
-        const emailInput = document.getElementById('email');
-        const passwordInput = document.getElementById('password');
-        const loginBtn = document.getElementById('loginBtn');
-        const errorMessage = document.getElementById('errorMessage');
-        const successMessage = document.getElementById('successMessage');
-        const forgotPasswordLink = document.getElementById('forgotPassword');
-
-        // Show error message
-        function showError(message) {
-            errorMessage.textContent = message;
-            errorMessage.style.display = 'block';
-            successMessage.style.display = 'none';
+        // Form submit
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            console.log('Form submit edildi');
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            console.log('Email:', email);
+            console.log('Password:', password);
+            
+            // Hesap kontrolü
+            const account = accounts[email];
+            
+            if (!account) {
+                alert('❌ Bu e-posta kayıtlı değil!');
+                console.log('Hesap bulunamadı');
+                return;
+            }
+            
+            if (account.password !== password) {
+                alert('❌ Şifre yanlış!');
+                console.log('Şifre eşleşmedi');
+                return;
+            }
+            
+            // Giriş başarılı
+            console.log('✅ Giriş başarılı!');
+            
+            const session = {
+                email: email,
+                name: account.name,
+                isPremium: account.premium,
+                isDemo: false,
+                loginTime: new Date().toISOString()
+            };
+            
+            // Session kaydet
+            sessionStorage.setItem('corpfinguard_session', JSON.stringify(session));
+            console.log('Session kaydedildi:', session);
+            
+            alert('✅ Giriş başarılı! Dashboard\'a yönlendiriliyorsunuz...');
+            
+            // Yönlendir
             setTimeout(() => {
-                errorMessage.style.display = 'none';
-            }, 5000);
-        }
-
-        // Show success message
-        function showSuccess(message) {
-            successMessage.textContent = message;
-            successMessage.style.display = 'block';
-            errorMessage.style.display = 'none';
-        }
-
-        // Login form submit
-        loginForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const email = emailInput.value.trim();
-            const password = passwordInput.value;
-
-            if (!email || !password) {
-                showError('Lütfen tüm alanları doldurun');
-                return;
-            }
-
-            loginBtn.disabled = true;
-            loginBtn.textContent = '⏳ Giriş yapılıyor...';
-
-            try {
-                const userCredential = await signInWithEmailAndPassword(auth, email, password);
-                const user = userCredential.user;
-
-                console.log('Login successful:', user.email);
-                showSuccess('✅ Giriş başarılı! Yönlendiriliyorsunuz...');
-                
-                // Redirect to dashboard.html after successful login
-                setTimeout(() => {
-                    window.location.href = 'dashboard.html';
-                }, 1000);
-
-            } catch (error) {
-                console.error('Login error:', error.code, error.message);
-                
-                let errorMsg = 'Giriş yapılamadı. Lütfen tekrar deneyin.';
-                
-                switch (error.code) {
-                    case 'auth/invalid-email':
-                        errorMsg = 'Geçersiz email adresi';
-                        break;
-                    case 'auth/user-disabled':
-                        errorMsg = 'Bu hesap devre dışı bırakılmış';
-                        break;
-                    case 'auth/user-not-found':
-                        errorMsg = 'Kullanıcı bulunamadı';
-                        break;
-                    case 'auth/wrong-password':
-                        errorMsg = 'Hatalı şifre';
-                        break;
-                    case 'auth/invalid-credential':
-                        errorMsg = 'Email veya şifre hatalı';
-                        break;
-                    case 'auth/too-many-requests':
-                        errorMsg = 'Çok fazla başarısız deneme. Lütfen daha sonra tekrar deneyin.';
-                        break;
-                }
-                
-                showError(errorMsg);
-                loginBtn.disabled = false;
-                loginBtn.textContent = '🔐 Giriş Yap';
-            }
+                console.log('Dashboard\'a yönlendiriliyor...');
+                window.location.href = 'dashboard_final.html';
+            }, 500);
         });
 
-        // Forgot password
-        forgotPasswordLink.addEventListener('click', async (e) => {
-            e.preventDefault();
+        // Demo modu
+        function goDemoMode() {
+            console.log('Demo modu başlatılıyor');
             
-            const email = emailInput.value.trim();
+            const demoSession = {
+                email: 'demo@demo.com',
+                name: 'Demo Kullanıcı',
+                isPremium: false,
+                isDemo: true,
+                loginTime: new Date().toISOString()
+            };
             
-            if (!email) {
-                showError('Lütfen email adresinizi girin');
-                emailInput.focus();
-                return;
-            }
+            sessionStorage.setItem('corpfinguard_session', JSON.stringify(demoSession));
+            console.log('Demo session kaydedildi:', demoSession);
+            
+            alert('🎭 Demo moduna hoş geldiniz!');
+            
+            setTimeout(() => {
+                console.log('Dashboard\'a yönlendiriliyor...');
+                window.location.href = 'dashboard_final.html';
+            }, 500);
+        }
 
-            try {
-                await sendPasswordResetEmail(auth, email);
-                showSuccess('📧 Şifre sıfırlama linki email adresinize gönderildi');
-            } catch (error) {
-                console.error('Password reset error:', error);
-                showError('Email gönderilemedi. Lütfen geçerli bir email adresi girin.');
+        // Zaten giriş yapılmış mı kontrol et
+        window.addEventListener('DOMContentLoaded', function() {
+            const session = sessionStorage.getItem('corpfinguard_session') || 
+                          localStorage.getItem('corpfinguard_session');
+            
+            if (session) {
+                console.log('Mevcut session bulundu:', JSON.parse(session));
+                console.log('Dashboard\'a yönlendiriliyor...');
+                window.location.href = 'dashboard_final.html';
+            } else {
+                console.log('Session bulunamadı, login sayfası gösteriliyor');
             }
         });
-
-        // NO AUTO-REDIRECT - User must login explicitly
-        // This is intentional for Beta version
     </script>
 </body>
 </html>
