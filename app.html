@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="tr">
 <head>
@@ -36,11 +35,49 @@
             color: white;
             padding: 30px;
             text-align: center;
+            position: relative;
         }
 
         .header h1 {
             font-size: 2.5em;
             margin-bottom: 10px;
+        }
+
+        .user-info {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-badge {
+            background: rgba(255,255,255,0.2);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logout-btn {
+            background: rgba(255,255,255,0.2);
+            border: 2px solid white;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s;
+            border: none;
+            outline: none;
+        }
+
+        .logout-btn:hover {
+            background: white;
+            color: #667eea;
         }
 
         .header .badge {
@@ -397,6 +434,14 @@
 <body>
     <div class="container">
         <div class="header">
+            <div class="user-info">
+                <div class="user-badge">
+                    <span id="userIcon">👤</span>
+                    <span id="userName">Kullanıcı</span>
+                </div>
+                <button class="logout-btn" onclick="logout()">🚪 Çıkış</button>
+            </div>
+            
             <h1>🛡️ CorpFinGuard ULTRA</h1>
             <p>Kurumsal Finansal Risk Analiz ve Erken Uyarı Sistemi</p>
             <div>
@@ -409,31 +454,21 @@
                 <span class="badge">40+ Oran</span>
             </div>
         </div>
- <!-- Çıkış Butonu -->
-    <div style="text-align: right; padding: 15px 30px; background: white; border-bottom: 1px solid #dee2e6;">
-        <button onclick="logout()" style="background: linear-gradient(135deg, #dc3545 0%, #c82333 100%); color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 14px; transition: all 0.3s;">
-            🚪 Çıkış Yap
-        </button>
-    </div>
-        <div class="upload-section">
-    <!-- Beta Üye Bildirimi -->
-    <div style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white; padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 30px;">
-        <h3 style="margin: 0 0 10px 0;">✅ Beta Üyeliğiniz Aktif</h3>
-        <p style="margin: 0; opacity: 0.9;">Sınırsız analiz yapabilir, Excel dosyalarınızı yükleyebilirsiniz</p>
-    </div>
 
-    <!-- Excel Upload - AÇIK! -->
-    <div class="upload-area" id="uploadArea">
-        <h2>📊 Mizan Dosyalarını Yükleyin</h2>
-        <p>Excel dosyalarınızı buraya sürükleyin veya tıklayın</p>
-        <small>En az 2 yıl, ideal 3-4 yıl mizan verisi yükleyin</small>
-        <input type="file" id="fileInput" multiple accept=".xlsx,.xls" style="display: none;">
-    </div>
-    <div id="fileList"></div>
-    <button class="analyze-btn" onclick="startAnalysis()">🚀 Analizi Başlat</button>
-    <button class="analyze-btn" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%);" onclick="startDemoAnalysis()">🎭 Demo Veriyle Test Et</button>
-    <button class="analyze-btn" style="background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);" onclick="clearAllData()">🗑️ Verileri Temizle</button>
-           <div id="reportSection" style="display: none;">
+        <div class="upload-section">
+            <div class="upload-area" id="uploadArea">
+                <h2>📊 Mizan Dosyalarını Yükleyin</h2>
+                <p>Excel dosyalarınızı buraya sürükleyin veya tıklayın</p>
+                <small>En az 2 yıl, ideal 3-4 yıl mizan verisi yükleyin</small>
+                <input type="file" id="fileInput" multiple accept=".xlsx,.xls">
+            </div>
+            <div id="fileList"></div>
+            <button class="analyze-btn" onclick="startAnalysis()">🚀 Analizi Başlat</button>
+            <button class="analyze-btn" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%);" onclick="startDemoAnalysis()">🎭 Demo Veriyle Test Et</button>
+            <button class="analyze-btn" style="background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);" onclick="clearAllData()">🗑️ Verileri Temizle</button>
+        </div>
+
+        <div id="reportSection" style="display: none;">
             <div class="tabs">
                 <button class="tab-btn active" onclick="showTab('overview', event)">📊 Özet</button>
                 <button class="tab-btn" onclick="showTab('ratios', event)">📈 40+ Oran</button>
@@ -456,6 +491,42 @@
     </div>
 
     <script>
+        // ============= SESSION MANAGEMENT =============
+        let currentUser = null;
+        
+        // Logout fonksiyonu
+        function logout() {
+            if (confirm('Çıkış yapmak istediğinize emin misiniz?')) {
+                localStorage.removeItem('corpfinguard_session');
+                sessionStorage.removeItem('corpfinguard_session');
+                window.location.href = 'login.html';
+            }
+        }
+        
+        // Session kontrolü - sayfa yüklendiğinde
+        (function checkSession() {
+            const sessionData = localStorage.getItem('corpfinguard_session') || 
+                               sessionStorage.getItem('corpfinguard_session');
+            
+            if (!sessionData) {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            currentUser = JSON.parse(sessionData);
+            
+            // Sayfa yüklendiğinde kullanıcı bilgilerini göster
+            window.addEventListener('DOMContentLoaded', function() {
+                document.getElementById('userName').textContent = currentUser.name;
+                
+                if (currentUser.isDemo) {
+                    document.getElementById('userIcon').textContent = '🎭';
+                    document.getElementById('userName').textContent = 'Demo Kullanıcı';
+                }
+            });
+        })();
+        
+        // ============= ORIGINAL CODE STARTS HERE =============
         // Global değişkenler
         let uploadedFiles = [];
         let parsedData = [];
@@ -464,7 +535,14 @@
         const uploadArea = document.getElementById('uploadArea');
         const fileInput = document.getElementById('fileInput');
 
-        uploadArea.addEventListener('click', () => fileInput.click());
+        uploadArea.addEventListener('click', () => {
+            // Premium kontrolü - sadece Excel yükleme için
+            if (currentUser && currentUser.isDemo) {
+                alert('🔒 Excel yükleme özelliği premium üyelere özeldir!\n\n✅ Demo ile tüm modülleri deneyebilirsiniz!\n📊 "Demo Veriyle Test Et" butonuna tıklayın.\n\n💎 Premium özellikleri kullanmak için:\n• Çıkış yapın\n• "Kayıt Ol" ile ücretsiz hesap oluşturun');
+                return;
+            }
+            fileInput.click();
+        });
         
         uploadArea.addEventListener('dragover', (e) => {
             e.preventDefault();
@@ -478,10 +556,22 @@
         uploadArea.addEventListener('drop', (e) => {
             e.preventDefault();
             uploadArea.style.background = 'white';
+            
+            // Premium kontrolü
+            if (currentUser && currentUser.isDemo) {
+                alert('🔒 Excel yükleme özelliği premium üyelere özeldir!');
+                return;
+            }
+            
             handleFiles(e.dataTransfer.files);
         });
 
         fileInput.addEventListener('change', (e) => {
+            // Premium kontrolü
+            if (currentUser && currentUser.isDemo) {
+                alert('🔒 Excel yükleme özelliği premium üyelere özeldir!');
+                return;
+            }
             handleFiles(e.target.files);
         });
 
@@ -780,6 +870,12 @@
 
         // EXCEL ANALİZ FONKSİYONU - GERÇEK MİZAN İÇİN
         async function startAnalysis() {
+            // Premium kontrolü
+            if (currentUser && currentUser.isDemo) {
+                alert('🔒 Excel analizi özelliği premium üyelere özeldir!\n\n✅ Demo veriyle tüm modülleri deneyebilirsiniz!\n📊 "Demo Veriyle Test Et" butonuna tıklayın.');
+                return;
+            }
+            
             if (uploadedFiles.length === 0) {
                 alert('Lütfen en az 2 yıllık mizan dosyası yükleyin!');
                 return;
@@ -3161,6 +3257,46 @@
             }
         }
 
+        // Excel okuma - ÇALIŞAN VERSİYON
+        async function startAnalysis() {
+            if (uploadedFiles.length === 0) {
+                alert('Lütfen Excel dosyası yükleyin veya Demo verilerden birini kullanın!');
+                return;
+            }
+            
+            parsedData = [];
+            showLoading(true);
+            
+            try {
+                for (let file of uploadedFiles) {
+                    const data = await readExcelFile(file);
+                    if (data) parsedData.push(data);
+                }
+                
+                if (parsedData.length === 0) {
+                    throw new Error('Excel dosyasından veri okunamadı');
+                }
+                
+                // Sort by year
+                parsedData.sort((a, b) => a.year - b.year);
+                
+                // Save to localStorage
+                saveDataToStorage();
+                
+                // Generate report
+                generateReport(parsedData);
+                document.getElementById('reportSection').style.display = 'block';
+                document.getElementById('reportSection').scrollIntoView({ behavior: 'smooth' });
+                
+                showLoading(false);
+                alert('✅ Excel dosyası başarıyla analiz edildi! Tüm modüller hazır.');
+                
+            } catch (error) {
+                showLoading(false);
+                alert('❌ Hata: ' + error.message);
+            }
+        }
+
         // Loading indicator
         function showLoading(show) {
             if (show) {
@@ -3208,87 +3344,6 @@
                 }
             }
         });
-// Logout function
-function logout() {
-    if (confirm('Çıkış yapmak istediğinize emin misiniz?')) {
-        localStorage.clear();
-        sessionStorage.clear();
-        window.location.href = 'login.html';
-    }
-}
-
-/ ============= FILE UPLOAD HANDLERS =============
-const uploadAreaEl = document.getElementById('uploadArea');
-const fileInputEl = document.getElementById('fileInput');
-
-if (uploadAreaEl && fileInputEl) {
-    // Click to open file dialog
-    uploadAreaEl.addEventListener('click', (e) => {
-        if (e.target.tagName !== 'INPUT') {
-            fileInputEl.click();
-        }
-    });
-
-    // Drag and drop
-    uploadAreaEl.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        uploadAreaEl.style.background = '#f0f4ff';
-        uploadAreaEl.style.borderColor = '#667eea';
-    });
-
-    uploadAreaEl.addEventListener('dragleave', (e) => {
-        e.preventDefault();
-        uploadAreaEl.style.background = 'white';
-        uploadAreaEl.style.borderColor = '#667eea';
-    });
-
-    uploadAreaEl.addEventListener('drop', (e) => {
-        e.preventDefault();
-        uploadAreaEl.style.background = 'white';
-        uploadAreaEl.style.borderColor = '#667eea';
-        
-        const files = e.dataTransfer.files;
-        if (files.length > 0) {
-            fileInputEl.files = files;
-            handleFiles(files);
-        }
-    });
-
-    // File input change
-    fileInputEl.addEventListener('change', (e) => {
-        handleFiles(e.target.files);
-    });
-}
-
-// ============= LOGOUT FUNCTION =============
-function logout() {
-    if (confirm('Çıkış yapmak istediğinize emin misiniz?')) {
-        // Clear all data
-        localStorage.clear();
-        sessionStorage.clear();
-        
-        // Redirect to login
-        window.location.href = 'login.html';
-    }
-}
-
-// ============= INITIALIZATION =============
-window.addEventListener('DOMContentLoaded', function() {
-    console.log('Dashboard loaded successfully');
-    console.log('Upload area:', uploadAreaEl);
-    console.log('File input:', fileInputEl);
-    
-    // Check for saved data
-    const savedData = localStorage.getItem('corpfinguard_data');
-    if (savedData) {
-        const data = JSON.parse(savedData);
-        if (confirm('Daha önce kaydedilmiş veri bulundu. Yüklemek ister misiniz?')) {
-            parsedData = data.parsedData;
-            generateReport(parsedData);
-            document.getElementById('reportSection').style.display = 'block';
-        }
-    }
-});
 
     </script>
 </body>
