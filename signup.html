@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CorpFinGuard - Kayıt Ol</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .signup-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+            max-width: 1000px;
+            width: 100%;
+            display: flex;
+        }
+
+        .signup-left {
+            flex: 1;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 60px 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .signup-left h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+
+        .signup-left p {
+            font-size: 1.1em;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+
+        .pricing-card {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .pricing-card h3 {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+        }
+
+        .price {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .price-period {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+
+        .benefit {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            font-size: 0.9em;
+        }
+
+        .benefit::before {
+            content: '✓';
+            margin-right: 10px;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .signup-right {
+            flex: 1;
+            padding: 60px 40px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .signup-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .signup-header h2 {
+            color: #2c3e50;
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .signup-header p {
+            color: #6c757d;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #2c3e50;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .terms {
+            display: flex;
+            align-items: flex-start;
+            margin: 20px 0;
+            font-size: 14px;
+            color: #6c757d;
+        }
+
+        .terms input {
+            margin-right: 10px;
+            margin-top: 3px;
+            cursor: pointer;
+        }
+
+        .terms a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        .terms a:hover {
+            text-decoration: underline;
+        }
+
+        .signup-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .signup-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .signup-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+            color: #6c757d;
+        }
+
+        .login-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .login-link a:hover {
+            color: #764ba2;
+        }
+
+        .alert {
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .alert-danger {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .password-strength {
+            height: 4px;
+            background: #e0e0e0;
+            border-radius: 2px;
+            margin-top: 5px;
+            overflow: hidden;
+        }
+
+        .password-strength-bar {
+            height: 100%;
+            width: 0;
+            transition: all 0.3s;
+        }
+
+        .strength-weak { background: #dc3545; width: 33%; }
+        .strength-medium { background: #ffc107; width: 66%; }
+        .strength-strong { background: #28a745; width: 100%; }
+
+        @media (max-width: 768px) {
+            .signup-container {
+                flex-direction: column;
+            }
+
+            .signup-left {
+                padding: 40px 30px;
+            }
+
+            .signup-right {
+                padding: 40px 30px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="signup-container">
+        <div class="signup-left">
+            <h1>🛡️ CorpFinGuard</h1>
+            <p>Profesyonel finansal analiz platformuna katılın</p>
+            
+            <div class="pricing-card">
+                <h3>Profesyonel Paket</h3>
+                <div class="price">₺2.499 <span class="price-period">/ay</span></div>
+                
+                <div class="benefit">Sınırsız şirket analizi</div>
+                <div class="benefit">40+ finansal oran</div>
+                <div class="benefit">7 iflas tahmin modeli</div>
+                <div class="benefit">Basel III & BDDK uyumlu</div>
+                <div class="benefit">TFRS 9 kredi risk analizi</div>
+                <div class="benefit">Benford's Law hile tespiti</div>
+                <div class="benefit">Excel & API entegrasyonu</div>
+                <div class="benefit">Öncelikli destek</div>
+            </div>
+
+            <p style="margin-top: 20px; font-size: 0.9em; opacity: 0.8;">
+                💡 İlk 30 gün ücretsiz deneme!
+            </p>
+        </div>
+
+        <div class="signup-right">
+            <div class="signup-header">
+                <h2>Hesap Oluşturun</h2>
+                <p>Hemen başlayın, kredi kartı gerektirmez</p>
+            </div>
+
+            <div id="alertBox" class="alert"></div>
+
+            <form id="signupForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="firstName">Ad</label>
+                        <input type="text" id="firstName" placeholder="Adınız" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="lastName">Soyad</label>
+                        <input type="text" id="lastName" placeholder="Soyadınız" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">E-posta</label>
+                    <input type="email" id="email" placeholder="ornek@firma.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="company">Şirket Adı</label>
+                    <input type="text" id="company" placeholder="Şirketinizin adı">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="phone">Telefon</label>
+                        <input type="tel" id="phone" placeholder="+90 (5__) ___ ____">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="position">Pozisyon</label>
+                        <select id="position" required>
+                            <option value="">Seçiniz</option>
+                            <option value="ceo">CEO / Genel Müdür</option>
+                            <option value="cfo">CFO / Mali İşler Müdürü</option>
+                            <option value="accountant">Muhasebe Müdürü</option>
+                            <option value="auditor">Denetçi</option>
+                            <option value="consultant">Danışman / SMMM</option>
+                            <option value="analyst">Finansal Analist</option>
+                            <option value="other">Diğer</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Şifre</label>
+                    <input type="password" id="password" placeholder="En az 8 karakter" required>
+                    <div class="password-strength">
+                        <div id="strengthBar" class="password-strength-bar"></div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmPassword">Şifre Tekrar</label>
+                    <input type="password" id="confirmPassword" placeholder="Şifrenizi tekrar girin" required>
+                </div>
+
+                <label class="terms">
+                    <input type="checkbox" id="terms" required>
+                    <span>
+                        <a href="#" target="_blank">Kullanım Şartları</a>'nı ve 
+                        <a href="#" target="_blank">Gizlilik Politikası</a>'nı okudum, kabul ediyorum.
+                    </span>
+                </label>
+
+                <label class="terms">
+                    <input type="checkbox" id="marketing">
+                    <span>Kampanya ve yenilikler hakkında e-posta almak istiyorum.</span>
+                </label>
+
+                <button type="submit" class="signup-btn" id="signupBtn">
+                    🚀 Ücretsiz Başla (30 Gün Deneme)
+                </button>
+            </form>
+
+            <div class="login-link">
+                Zaten hesabınız var mı? <a href="login.html">Giriş Yapın</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Şifre gücü kontrolü
+        document.getElementById('password').addEventListener('input', function(e) {
+            const password = e.target.value;
+            const strengthBar = document.getElementById('strengthBar');
+            
+            let strength = 0;
+            if (password.length >= 8) strength++;
+            if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength++;
+            if (/\d/.test(password)) strength++;
+            if (/[^a-zA-Z0-9]/.test(password)) strength++;
+            
+            strengthBar.className = 'password-strength-bar';
+            if (strength <= 1) {
+                strengthBar.classList.add('strength-weak');
+            } else if (strength <= 3) {
+                strengthBar.classList.add('strength-medium');
+            } else {
+                strengthBar.classList.add('strength-strong');
+            }
+        });
+
+        // Form gönderimi
+        document.getElementById('signupForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const terms = document.getElementById('terms').checked;
+            
+            // Validasyonlar
+            if (password.length < 8) {
+                showAlert('❌ Şifre en az 8 karakter olmalıdır!', 'danger');
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                showAlert('❌ Şifreler eşleşmiyor!', 'danger');
+                return;
+            }
+            
+            if (!terms) {
+                showAlert('❌ Kullanım şartlarını kabul etmelisiniz!', 'danger');
+                return;
+            }
+            
+            // Kayıt işlemi (production'da backend'e gönderilecek)
+            const userData = {
+                firstName: document.getElementById('firstName').value,
+                lastName: document.getElementById('lastName').value,
+                email: document.getElementById('email').value,
+                company: document.getElementById('company').value,
+                phone: document.getElementById('phone').value,
+                position: document.getElementById('position').value,
+                marketing: document.getElementById('marketing').checked,
+                registrationDate: new Date().toISOString()
+            };
+            
+            // LocalStorage'a kaydet (production'da backend kullanılacak)
+            const users = JSON.parse(localStorage.getItem('corpfinguard_users') || '[]');
+            
+            // E-posta kontrolü
+            if (users.find(u => u.email === userData.email)) {
+                showAlert('❌ Bu e-posta adresi zaten kayıtlı!', 'danger');
+                return;
+            }
+            
+            users.push({
+                ...userData,
+                password: password // Production'da hash'lenecek
+            });
+            
+            localStorage.setItem('corpfinguard_users', JSON.stringify(users));
+            
+            showAlert('✅ Kayıt başarılı! Giriş sayfasına yönlendiriliyorsunuz...', 'success');
+            
+            setTimeout(() => {
+                window.location.href = 'login.html';
+            }, 2000);
+        });
+
+        function showAlert(message, type) {
+            const alertBox = document.getElementById('alertBox');
+            alertBox.textContent = message;
+            alertBox.className = 'alert alert-' + type;
+            alertBox.style.display = 'block';
+            
+            setTimeout(() => {
+                alertBox.style.display = 'none';
+            }, 5000);
+        }
+
+        // Telefon formatı
+        document.getElementById('phone').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length > 10) value = value.slice(0, 10);
+            
+            if (value.length > 6) {
+                e.target.value = value.slice(0, 3) + ' ' + value.slice(3, 6) + ' ' + value.slice(6);
+            } else if (value.length > 3) {
+                e.target.value = value.slice(0, 3) + ' ' + value.slice(3);
+            } else {
+                e.target.value = value;
+            }
+        });
+    </script>
+</body>
+</html>
