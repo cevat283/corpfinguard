@@ -802,7 +802,7 @@
             if (confirm('Çıkış yapmak istediğinize emin misiniz?')) {
                 localStorage.removeItem('corpfinguard_session');
                 sessionStorage.removeItem('corpfinguard_session');
-                window.location.href = 'login.html';
+                window.location.href = 'login.simple.html';
             }
         }
         
@@ -812,7 +812,7 @@
                                sessionStorage.getItem('corpfinguard_session');
             
             if (!sessionData) {
-                window.location.href = 'login.html';
+                window.location.href = 'login.simple.html';
                 return;
             }
             
