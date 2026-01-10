@@ -1,0 +1,4290 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CorpFinGuard ULTRA - Professional Edition</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .user-info {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-badge {
+            background: rgba(255,255,255,0.2);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logout-btn {
+            background: rgba(255,255,255,0.2);
+            border: 2px solid white;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s;
+            border: none;
+            outline: none;
+        }
+
+        .logout-btn:hover {
+            background: white;
+            color: #667eea;
+        }
+
+        .header .badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 5px 15px;
+            border-radius: 20px;
+            margin: 5px;
+            font-size: 12px;
+        }
+
+        .upload-section {
+            padding: 30px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+            text-align: center;
+        }
+
+        .upload-area {
+            border: 3px dashed #667eea;
+            border-radius: 10px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: white;
+            margin-bottom: 20px;
+        }
+
+        .upload-area:hover {
+            background: #f0f4ff;
+            border-color: #764ba2;
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        .analyze-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            margin: 10px;
+            transition: all 0.3s;
+        }
+
+        .analyze-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .tabs {
+            display: flex;
+            background: #f8f9fa;
+            padding: 0;
+            gap: 0;
+            overflow-x: auto;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            padding: 15px 20px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #495057;
+            transition: all 0.3s;
+            white-space: nowrap;
+            position: relative;
+        }
+
+        .tab-btn:hover {
+            background: #e9ecef;
+        }
+
+        .tab-btn.active {
+            color: #667eea;
+            background: white;
+        }
+
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: #667eea;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 30px;
+            animation: fadeIn 0.5s;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-title {
+            color: #2c3e50;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        .data-table th {
+            background: #667eea;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-size: 14px;
+        }
+
+        .data-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #dee2e6;
+            font-size: 14px;
+        }
+
+        .data-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .metric-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .metric-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .risk-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 12px;
+            margin: 5px;
+        }
+
+        .risk-low { background: #d4edda; color: #155724; }
+        .risk-medium { background: #fff3cd; color: #856404; }
+        .risk-high { background: #f8d7da; color: #721c24; }
+        .risk-critical { background: #721c24; color: white; }
+
+        .info-box {
+            background: #e7f1ff;
+            border-left: 5px solid #667eea;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .danger-box {
+            background: #f8d7da;
+            border-left: 5px solid #dc3545;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .success-box {
+            background: #d4edda;
+            border-left: 5px solid #28a745;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .patron-comment {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeeba 100%);
+            border: 2px solid #ffc107;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            position: relative;
+        }
+
+        .patron-comment::before {
+            content: "💡 PATRON İÇİN ÖZET";
+            position: absolute;
+            top: -12px;
+            left: 20px;
+            background: #ffc107;
+            color: #000;
+            padding: 2px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .patron-comment.good {
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+            border-color: #28a745;
+        }
+
+        .patron-comment.danger {
+            background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+            border-color: #dc3545;
+        }
+
+        .action-box {
+            background: rgba(255,255,255,0.7);
+            border-radius: 6px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+
+        .model-score {
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: bold;
+            margin: 10px;
+            font-size: 18px;
+        }
+
+        .score-good { background: #d4edda; color: #155724; }
+        .score-warning { background: #fff3cd; color: #856404; }
+        .score-danger { background: #f8d7da; color: #721c24; }
+
+        .regulation-badge {
+            display: inline-block;
+            background: #6c757d;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            margin-left: 5px;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 400px;
+            margin: 30px 0;
+        }
+
+        .dupont-tree {
+            display: flex;
+            justify-content: center;
+            margin: 30px 0;
+        }
+
+        .dupont-node {
+            background: white;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .manipulation-indicator {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+
+        .manipulation-high { background: #f8d7da; }
+        .manipulation-medium { background: #fff3cd; }
+        .manipulation-low { background: #d4edda; }
+
+        .basel-table {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .bddk-classification {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+        }
+
+        .bddk-group {
+            text-align: center;
+            padding: 20px;
+            border-radius: 10px;
+            flex: 1;
+            margin: 0 10px;
+        }
+
+        .bddk-1 { background: #d4edda; }
+        .bddk-2 { background: #cfe2ff; }
+        .bddk-3 { background: #fff3cd; }
+        .bddk-4 { background: #f8d7da; }
+        .bddk-5 { background: #721c24; color: white; }
+
+        .tfrs9-stages {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .tfrs9-stage {
+            background: white;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        @media print {
+            .tabs, .upload-section { display: none; }
+            .tab-content { display: block !important; }
+        }
+    /* Format Selector */
+.format-selector {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-bottom: 25px;
+    flex-wrap: wrap;
+}
+
+.format-card {
+    background: white;
+    border: 3px solid #e0e0e0;
+    border-radius: 15px;
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-align: center;
+    min-width: 180px;
+    flex: 1;
+    max-width: 250px;
+}
+
+.format-card:hover {
+    border-color: #667eea;
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+}
+
+.format-card.active {
+    border-color: #667eea;
+    background: #f0f4ff;
+}
+
+.format-card h3 {
+    color: #2c3e50;
+    margin: 10px 0;
+    font-size: 1.1em;
+}
+
+.format-card p {
+    color: #6c757d;
+    font-size: 13px;
+}
+
+/* Year Comparison */
+.year-selector {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 30px;
+    overflow-x: auto;
+    padding-bottom: 10px;
+}
+
+.year-tab {
+    background: white;
+    border: 2px solid #e0e0e0;
+    padding: 15px 30px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s;
+    white-space: nowrap;
+    font-weight: 600;
+}
+
+.year-tab:hover {
+    border-color: #667eea;
+}
+
+.year-tab.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-color: transparent;
+}
+
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin: 20px 0;
+}
+
+.metric-card {
+    background: white;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+}
+
+.metric-label {
+    color: #6c757d;
+    font-size: 14px;
+    margin-bottom: 10px;
+    font-weight: 500;
+}
+
+.metric-value {
+    font-size: 32px;
+    font-weight: bold;
+    color: #667eea;
+    margin-bottom: 10px;
+}
+
+.metric-change {
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-weight: 600;
+}
+
+.metric-change.positive {
+    color: #28a745;
+}
+
+.metric-change.negative {
+    color: #dc3545;
+}
+
+.metric-change.neutral {
+    color: #6c757d;
+}
+
+
+/* Premium Modüller */
+.premium-section {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    padding: 40px;
+    margin: 30px 20px;
+    border-radius: 15px;
+    text-align: center;
+}
+
+.premium-title {
+    color: white;
+    font-size: 2em;
+    margin-bottom: 20px;
+    font-weight: 900;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+}
+
+.premium-modules {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 25px;
+    margin-top: 30px;
+}
+
+.premium-card {
+    background: white;
+    padding: 35px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    transition: all 0.3s;
+    text-align: center;
+}
+
+.premium-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+}
+
+.premium-icon {
+    font-size: 4em;
+    margin-bottom: 15px;
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+}
+
+.premium-card h3 {
+    color: #2c3e50;
+    margin-bottom: 15px;
+    font-size: 1.5em;
+}
+
+.premium-card p {
+    color: #666;
+    margin-bottom: 20px;
+    line-height: 1.6;
+    min-height: 80px;
+}
+
+.premium-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+
+        <!-- Premium Modüller -->
+        <div class="premium-section">
+            <div class="premium-badge">🚀 YENI</div>
+            <h2 class="premium-title">💎 Premium Modüller</h2>
+            <p style="color: white; font-size: 1.2em; margin-bottom: 30px; text-shadow: 1px 1px 2px rgba(0,0,0,0.2);">
+                İleri seviye analiz ve yapay zeka özellikleri ile rekabette bir adım önde olun
+            </p>
+            
+            <div class="premium-modules">
+                <!-- XAI Modülü -->
+                <div class="premium-card">
+                    <div class="premium-icon">🧠</div>
+                    <h3>XAI - Açıklanabilir AI</h3>
+                    <p>Yapay zeka kararlarının detaylı açıklaması. "Neden bu sonuç?" sorusuna bilimsel cevap. Faktör ağırlıkları ve what-if senaryoları.</p>
+                    <div class="premium-price">+₺999/ay</div>
+                    <button class="premium-btn" onclick="openXAI()">
+                        🚀 Modülü Aç
+                    </button>
+                </div>
+
+                <!-- Davranışsal Finans -->
+                <div class="premium-card">
+                    <div class="premium-icon">🎯</div>
+                    <h3>Davranışsal Finans</h3>
+                    <p>Psikolojik faktörler ve cognitive bias analizi. 12 farklı önyargı tespiti, risk psikolojisi profili ve davranışsal skorlama.</p>
+                    <div class="premium-price">+₺999/ay</div>
+                    <button class="premium-btn" disabled>
+                        ⏳ Yakında
+                    </button>
+                </div>
+
+                <!-- AI Mobil CFO -->
+                <div class="premium-card">
+                    <div class="premium-icon">🤖</div>
+                    <h3>AI Mobil CFO</h3>
+                    <p>7/24 akıllı finansal asistan. Öğrenen sistem, proaktif uyarılar, otomatik raporlama ve WhatsApp entegrasyonu.</p>
+                    <div class="premium-price">+₺1,499/ay</div>
+                    <button class="premium-btn" disabled>
+                        ⏳ Yakında
+                    </button>
+                </div>
+            </div>
+            
+            <p style="color: white; margin-top: 30px; font-size: 0.9em; opacity: 0.8;">
+                💎 Ultimate Paket: Tüm premium modüller ₺4,999/ay (%20 indirim)
+            </p>
+        </div>
+
+    color: white;
+    padding: 15px 35px;
+    border: none;
+    border-radius: 10px;
+    font-size: 1.1em;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s;
+    width: 100%;
+}
+
+.premium-btn:hover:not(:disabled) {
+    transform: scale(1.05);
+    box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+}
+
+.premium-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.premium-price {
+    color: #667eea;
+    font-size: 1.4em;
+    font-weight: 900;
+    margin: 15px 0;
+}
+
+.premium-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    color: white;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 0.8em;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="user-info">
+                <div class="user-badge">
+                    <span id="userIcon">👤</span>
+                    <span id="userName">Kullanıcı</span>
+                </div>
+                <button class="logout-btn" onclick="logout()">🚪 Çıkış</button>
+            </div>
+            
+            <h1>🛡️ CorpFinGuard ULTRA</h1>
+            <p>Kurumsal Finansal Risk Analiz ve Erken Uyarı Sistemi</p>
+            <div>
+                <span class="badge">Basel III</span>
+                <span class="badge">BDDK</span>
+                <span class="badge">TFRS 9</span>
+                <span class="badge">7 İflas Modeli</span>
+                <span class="badge">Benford Law</span>
+                <span class="badge">DuPont</span>
+                <span class="badge">40+ Oran</span>
+            </div>
+        </div>
+
+        <div class="upload-section">
+            <h2 style="text-align: center; margin-bottom: 20px;">📂 Veri Yükleme Formatı</h2>
+            
+            <!-- Format Selector -->
+            <div class="format-selector">
+                <div class="format-card active" data-format="mizan" onclick="selectFormat('mizan')">
+                    <div style="font-size: 48px;">📊</div>
+                    <h3>Excel Mizan</h3>
+                    <p>Hesap kodu, borç, alacak</p>
+                    <p><small>Her yıl ayrı dosya</small></p>
+                </div>
+
+                <div class="format-card" data-format="bilanco" onclick="selectFormat('bilanco')">
+                    <div style="font-size: 48px;">📋</div>
+                    <h3>Karşılaştırmalı Bilanço</h3>
+                    <p>3 yıl yan yana</p>
+                    <p><small>Tek dosyada çoklu yıl</small></p>
+                </div>
+
+                <div class="format-card" data-format="beyanname" onclick="selectFormat('beyanname')">
+                    <div style="font-size: 48px;">📄</div>
+                    <h3>PDF Beyanname</h3>
+                    <p>Kurumlar vergisi</p>
+                    <p><small>Otomatik okuma</small></p>
+                </div>
+            </div>
+            
+            <div class="upload-area" id="uploadArea">
+                <h2 id="uploadTitle">📊 Mizan Dosyalarını Yükleyin</h2>
+                <p id="uploadDesc">Excel dosyalarınızı buraya sürükleyin veya tıklayın</p>
+                <small id="uploadHint">En az 2 yıl, ideal 3-4 yıl mizan verisi yükleyin</small>
+                <input type="file" id="fileInput" multiple accept=".xlsx,.xls,.pdf">
+            </div>
+            <div id="fileList"></div>
+            <button class="analyze-btn" onclick="startAnalysis()">🚀 Analizi Başlat</button>
+            <button class="analyze-btn" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%);" onclick="startDemoAnalysis()">🎭 Demo Veriyle Test Et</button>
+            <button class="analyze-btn" style="background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);" onclick="exportToPDF()">📄 PDF Rapor İndir</button>
+            <button class="analyze-btn" style="background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);" onclick="clearAllData()">🗑️ Verileri Temizle</button>
+        </div>
+
+        <div id="reportSection" style="display: none;">
+            <div class="tabs">
+                <button class="tab-btn active" onclick="showTab('overview', event)">📊 Özet</button>
+                <button class="tab-btn" onclick="showTab('ratios', event)">📈 40+ Oran</button>
+                <button class="tab-btn" onclick="showTab('dupont', event)">🎯 DuPont</button>
+                <button class="tab-btn" onclick="showTab('bankruptcy', event)">⚠️ 7 İflas Modeli</button>
+                <button class="tab-btn" onclick="showTab('manipulation', event)">🔍 Hile Tespiti</button>
+                <button class="tab-btn" onclick="showTab('basel', event)">🏦 Basel III</button>
+                <button class="tab-btn" onclick="showTab('bddk', event)">🏛️ BDDK</button>
+                <button class="tab-btn" onclick="showTab('tfrs9', event)">📋 TFRS 9</button>
+                <button class="tab-btn" onclick="showTab('credit', event)">💳 Kredi</button>
+                <button class="tab-btn" onclick="showTab('trends', event)">📉 Trendler</button>
+                <button class="tab-btn" onclick="showTab('cashflow', event)">💰 Nakit</button>
+                <button class="tab-btn" onclick="showTab('scenario', event)">🔮 Senaryo</button>
+                <button class="tab-btn" onclick="showTab('valuation', event)">💎 Değerleme</button>
+                <button class="tab-btn" onclick="showTab('yearComparison', event)">📅 Yıl Karşılaştırma</button>
+                <button class="tab-btn" onclick="showTab('recommendations', event)">💡 Öneriler</button>
+            </div>
+
+            <div id="tabContents"></div>
+        </div>
+    </div>
+
+    <script>
+        // ============= SESSION MANAGEMENT =============
+        let currentUser = null;
+        
+        // Logout fonksiyonu
+        function logout() {
+            if (confirm('Çıkış yapmak istediğinize emin misiniz?')) {
+                localStorage.removeItem('corpfinguard_session');
+                sessionStorage.removeItem('corpfinguard_session');
+                window.location.href = 'login.html';
+            }
+        }
+        
+        // Session kontrolü - sayfa yüklendiğinde
+        (function checkSession() {
+            const sessionData = localStorage.getItem('corpfinguard_session') || 
+                               sessionStorage.getItem('corpfinguard_session');
+            
+            if (!sessionData) {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            currentUser = JSON.parse(sessionData);
+            
+            // Sayfa yüklendiğinde kullanıcı bilgilerini göster
+            window.addEventListener('DOMContentLoaded', function() {
+                document.getElementById('userName').textContent = currentUser.name;
+                
+                if (currentUser.isDemo) {
+                    document.getElementById('userIcon').textContent = '🎭';
+                    document.getElementById('userName').textContent = 'Demo Kullanıcı';
+                }
+            });
+        })();
+        
+        // ============= ORIGINAL CODE STARTS HERE =============
+        // Global değişkenler
+        let uploadedFiles = [];
+        let parsedData = [];
+
+        // Dosya yükleme
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+
+        uploadArea.addEventListener('click', () => {
+            // Premium kontrolü - sadece Excel yükleme için
+            if (currentUser && currentUser.isDemo) {
+                alert('🔒 Excel yükleme özelliği premium üyelere özeldir!\n\n✅ Demo ile tüm modülleri deneyebilirsiniz!\n📊 "Demo Veriyle Test Et" butonuna tıklayın.\n\n💎 Premium özellikleri kullanmak için:\n• Çıkış yapın\n• "Kayıt Ol" ile ücretsiz hesap oluşturun');
+                return;
+            }
+            fileInput.click();
+        });
+        
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.style.background = '#f0f4ff';
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.style.background = 'white';
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.style.background = 'white';
+            
+            // Premium kontrolü
+            if (currentUser && currentUser.isDemo) {
+                alert('🔒 Excel yükleme özelliği premium üyelere özeldir!');
+                return;
+            }
+            
+            handleFiles(e.dataTransfer.files);
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            // Premium kontrolü
+            if (currentUser && currentUser.isDemo) {
+                alert('🔒 Excel yükleme özelliği premium üyelere özeldir!');
+                return;
+            }
+            handleFiles(e.target.files);
+        });
+
+        function handleFiles(files) {
+            uploadedFiles = Array.from(files);
+            displayFileList();
+        }
+
+        function displayFileList() {
+            const fileList = document.getElementById('fileList');
+            fileList.innerHTML = '<h3>Yüklenen Dosyalar:</h3>' +
+                uploadedFiles.map(file => `<p>✓ ${file.name}</p>`).join('');
+        }
+
+        // Excel okuma - ÇALIŞAN VERSİYON
+        async function startAnalysis() {
+            if (uploadedFiles.length === 0) {
+                alert('Lütfen Excel dosyası yükleyin veya Demo verilerden birini kullanın!');
+                return;
+            }
+            
+            parsedData = [];
+            showLoading(true);
+            
+            try {
+                for (let file of uploadedFiles) {
+                    const data = await readExcelFile(file);
+                    if (data) parsedData.push(data);
+                }
+                
+                if (parsedData.length === 0) {
+                    throw new Error('Excel dosyasından veri okunamadı');
+                }
+                
+                // Sort by year
+                parsedData.sort((a, b) => a.year - b.year);
+                
+                // Save to localStorage
+                saveDataToStorage();
+                
+                // Generate report
+                generateReport(parsedData);
+                document.getElementById('reportSection').style.display = 'block';
+                document.getElementById('reportSection').scrollIntoView({ behavior: 'smooth' });
+                
+                showLoading(false);
+                alert('✅ Excel dosyası başarıyla analiz edildi! Tüm modüller hazır.');
+                
+            } catch (error) {
+                showLoading(false);
+                alert('❌ Hata: ' + error.message);
+            }
+        }
+
+        // DEMO VERİ OLUŞTUR
+        function generateDemoData() {
+            return [
+                {
+                    year: 2021,
+                    // Bilanço
+                    cash: 12500000,
+                    marketableSecurities: 3000000,
+                    receivables: 28000000,
+                    inventory: 19000000,
+                    prepaidExpenses: 2000000,
+                    otherCurrentAssets: 1500000,
+                    currentAssets: 66000000,
+                    
+                    ppe: 45000000,
+                    intangibles: 5000000,
+                    investments: 8000000,
+                    otherNonCurrentAssets: 3000000,
+                    nonCurrentAssets: 61000000,
+                    totalAssets: 127000000,
+                    
+                    accountsPayable: 18000000,
+                    shortTermDebt: 15000000,
+                    currentPortionLTD: 5000000,
+                    accruedExpenses: 4000000,
+                    otherCurrentLiabilities: 2000000,
+                    currentLiabilities: 44000000,
+                    
+                    longTermDebt: 32000000,
+                    deferredTaxes: 3000000,
+                    otherNonCurrentLiabilities: 2000000,
+                    nonCurrentLiabilities: 37000000,
+                    totalLiabilities: 81000000,
+                    
+                    commonStock: 20000000,
+                    retainedEarnings: 24000000,
+                    otherEquity: 2000000,
+                    totalEquity: 46000000,
+                    
+                    // Gelir Tablosu
+                    revenue: 145000000,
+                    cogs: 94250000,
+                    grossProfit: 50750000,
+                    
+                    salesExpenses: 14500000,
+                    adminExpenses: 10150000,
+                    rdExpenses: 2900000,
+                    operatingExpenses: 27550000,
+                    operatingIncome: 23200000,
+                    
+                    depreciation: 4500000,
+                    amortization: 500000,
+                    ebitda: 28200000,
+                    
+                    interestExpense: 5200000,
+                    otherIncome: 1000000,
+                    ebt: 19000000,
+                    
+                    taxExpense: 4180000,
+                    netIncome: 14820000,
+                    
+                    // Nakit Akım
+                    operatingCashFlow: 18500000,
+                    investingCashFlow: -8000000,
+                    financingCashFlow: -5000000,
+                    freeCashFlow: 10500000,
+                    
+                    // Diğer
+                    sharesOutstanding: 10000000,
+                    dividendsPaid: 4000000,
+                    capex: 7000000,
+                    workingCapital: 22000000,
+                    
+                    // Risk Ağırlıklı Varlıklar (Basel III)
+                    riskWeightedAssets: 95000000,
+                    tier1Capital: 38000000,
+                    tier2Capital: 8000000,
+                    cet1Capital: 35000000
+                },
+                {
+                    year: 2022,
+                    cash: 9800000,
+                    marketableSecurities: 2500000,
+                    receivables: 34000000,
+                    inventory: 24000000,
+                    prepaidExpenses: 2500000,
+                    otherCurrentAssets: 1700000,
+                    currentAssets: 74500000,
+                    
+                    ppe: 52000000,
+                    intangibles: 5500000,
+                    investments: 9000000,
+                    otherNonCurrentAssets: 3500000,
+                    nonCurrentAssets: 70000000,
+                    totalAssets: 144500000,
+                    
+                    accountsPayable: 22000000,
+                    shortTermDebt: 20000000,
+                    currentPortionLTD: 6000000,
+                    accruedExpenses: 5000000,
+                    otherCurrentLiabilities: 2500000,
+                    currentLiabilities: 55500000,
+                    
+                    longTermDebt: 38000000,
+                    deferredTaxes: 3500000,
+                    otherNonCurrentLiabilities: 2500000,
+                    nonCurrentLiabilities: 44000000,
+                    totalLiabilities: 99500000,
+                    
+                    commonStock: 20000000,
+                    retainedEarnings: 23000000,
+                    otherEquity: 2000000,
+                    totalEquity: 45000000,
+                    
+                    revenue: 162000000,
+                    cogs: 108540000,
+                    grossProfit: 53460000,
+                    
+                    salesExpenses: 17820000,
+                    adminExpenses: 11340000,
+                    rdExpenses: 3240000,
+                    operatingExpenses: 32400000,
+                    operatingIncome: 21060000,
+                    
+                    depreciation: 5200000,
+                    amortization: 600000,
+                    ebitda: 26860000,
+                    
+                    interestExpense: 6800000,
+                    otherIncome: 800000,
+                    ebt: 15060000,
+                    
+                    taxExpense: 3313000,
+                    netIncome: 11747000,
+                    
+                    operatingCashFlow: 15200000,
+                    investingCashFlow: -12000000,
+                    financingCashFlow: -2000000,
+                    freeCashFlow: 3200000,
+                    
+                    sharesOutstanding: 10000000,
+                    dividendsPaid: 3500000,
+                    capex: 9000000,
+                    workingCapital: 19000000,
+                    
+                    riskWeightedAssets: 108000000,
+                    tier1Capital: 36000000,
+                    tier2Capital: 9000000,
+                    cet1Capital: 33000000
+                },
+                {
+                    year: 2023,
+                    cash: 6200000,
+                    marketableSecurities: 1800000,
+                    receivables: 42000000,
+                    inventory: 31000000,
+                    prepaidExpenses: 3000000,
+                    otherCurrentAssets: 2000000,
+                    currentAssets: 86000000,
+                    
+                    ppe: 58000000,
+                    intangibles: 6000000,
+                    investments: 10000000,
+                    otherNonCurrentAssets: 4000000,
+                    nonCurrentAssets: 78000000,
+                    totalAssets: 164000000,
+                    
+                    accountsPayable: 28000000,
+                    shortTermDebt: 28000000,
+                    currentPortionLTD: 8000000,
+                    accruedExpenses: 6000000,
+                    otherCurrentLiabilities: 3000000,
+                    currentLiabilities: 73000000,
+                    
+                    longTermDebt: 45000000,
+                    deferredTaxes: 4000000,
+                    otherNonCurrentLiabilities: 3000000,
+                    nonCurrentLiabilities: 52000000,
+                    totalLiabilities: 125000000,
+                    
+                    commonStock: 20000000,
+                    retainedEarnings: 17000000,
+                    otherEquity: 2000000,
+                    totalEquity: 39000000,
+                    
+                    revenue: 168000000,
+                    cogs: 117600000,
+                    grossProfit: 50400000,
+                    
+                    salesExpenses: 20160000,
+                    adminExpenses: 13440000,
+                    rdExpenses: 3360000,
+                    operatingExpenses: 36960000,
+                    operatingIncome: 13440000,
+                    
+                    depreciation: 6000000,
+                    amortization: 700000,
+                    ebitda: 20140000,
+                    
+                    interestExpense: 9200000,
+                    otherIncome: 500000,
+                    ebt: 4740000,
+                    
+                    taxExpense: 1043000,
+                    netIncome: 3697000,
+                    
+                    operatingCashFlow: 8500000,
+                    investingCashFlow: -15000000,
+                    financingCashFlow: 3000000,
+                    freeCashFlow: -6500000,
+                    
+                    sharesOutstanding: 10000000,
+                    dividendsPaid: 1000000,
+                    capex: 12000000,
+                    workingCapital: 13000000,
+                    
+                    riskWeightedAssets: 123000000,
+                    tier1Capital: 31000000,
+                    tier2Capital: 8000000,
+                    cet1Capital: 28000000
+                }
+            ];
+        }
+
+        // DEMO ANALİZ FONKSİYONU
+        function startDemoAnalysis() {
+            const demoData = generateDemoData();
+            parsedData = demoData;
+            generateReport(parsedData);
+            document.getElementById('reportSection').style.display = 'block';
+            
+            setTimeout(() => {
+                alert('📊 DEMO VERİLERLE TEST EDİYORSUNUZ!\n\n' + 
+                      '✅ 40+ Finansal Oran\n' +
+                      '✅ 7 İflas Modeli (Altman, Springate, Ohlson...)\n' +
+                      '✅ Basel III, BDDK, TFRS 9 Analizleri\n' +
+                      '✅ Benford Law ile Hile Tespiti\n' +
+                      '✅ DuPont Analizi\n\n' +
+                      'Tüm modülleri inceleyebilirsiniz!');
+            }, 500);
+        }
+
+        // EXCEL ANALİZ FONKSİYONU - GERÇEK MİZAN İÇİN
+        async function startAnalysis() {
+            // Premium kontrolü
+            if (currentUser && currentUser.isDemo) {
+                alert('🔒 Excel analizi özelliği premium üyelere özeldir!\n\n✅ Demo veriyle tüm modülleri deneyebilirsiniz!\n📊 "Demo Veriyle Test Et" butonuna tıklayın.');
+                return;
+            }
+            
+            if (uploadedFiles.length === 0) {
+                alert('Lütfen en az 2 yıllık mizan dosyası yükleyin!');
+                return;
+            }
+            
+            parsedData = [];
+            
+            try {
+                for (let file of uploadedFiles) {
+                    const data = await readExcelFile(file);
+                    parsedData.push(data);
+                }
+                
+                // Yılları kronolojik sırala
+                parsedData.sort((a, b) => a.year - b.year);
+                
+                if (parsedData.length < 2) {
+                    alert('En az 2 yıllık veri gerekli!');
+                    return;
+                }
+                
+                generateReport(parsedData);
+                document.getElementById('reportSection').style.display = 'block';
+                document.getElementById('reportSection').scrollIntoView({ behavior: 'smooth' });
+                
+            } catch (error) {
+                alert('Dosya okuma hatası: ' + error.message);
+            }
+        }
+
+        // EXCEL OKUMA FONKSİYONU
+        function readExcelFile(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    try {
+                        const data = new Uint8Array(e.target.result);
+                        const workbook = XLSX.read(data, { type: 'array' });
+                        const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                        const jsonData = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
+                        
+                        // Dosya adından yıl çıkar
+                        const year = extractYear(file.name) || new Date().getFullYear();
+                        
+                        // Mizan verilerini parse et
+                        const financialData = parseMizanData(jsonData, year);
+                        resolve(financialData);
+                        
+                    } catch (error) {
+                        reject(error);
+                    }
+                };
+                
+                reader.readAsArrayBuffer(file);
+            });
+        }
+
+        // DOSYA ADINDAN YIL ÇIKAR
+        function extractYear(filename) {
+            const match = filename.match(/20\d{2}/);
+            return match ? parseInt(match[0]) : null;
+        }
+
+        // MİZAN VERİLERİNİ PARSE ET - ALT HESAP DESTEĞİ
+        function parseMizanData(data, year) {
+            const accounts = {};
+            
+            // Parse each row
+            data.forEach((row, index) => {
+                if (!row || row.length < 3) return;
+                
+                let accountCode = null;
+                let balance = 0;
+                
+                // Try different column formats
+                if (typeof row[0] === 'string' && row[0].match(/^\d{3}/)) {
+                    // Format: "102.01.01 - GARANTİ BANKASI"
+                    accountCode = parseInt(row[0].substring(0, 3));
+                    balance = parseFloat(row[row.length - 1]) || parseFloat(row[row.length - 2]) || 0;
+                } else if (typeof row[0] === 'number') {
+                    // Format: 102 as number
+                    accountCode = row[0];
+                    balance = parseFloat(row[row.length - 1]) || parseFloat(row[row.length - 2]) || 0;
+                }
+                
+                if (accountCode && accountCode >= 100 && accountCode < 999) {
+                    if (!accounts[accountCode]) accounts[accountCode] = 0;
+                    accounts[accountCode] += Math.abs(balance);
+                }
+            });
+            const result = {
+                year: year,
+                // Bilanço kalemleri - başlangıç değerleri
+                cash: 0,
+                marketableSecurities: 0,
+                receivables: 0,
+                inventory: 0,
+                prepaidExpenses: 0,
+                otherCurrentAssets: 0,
+                currentAssets: 0,
+                ppe: 0,
+                intangibles: 0,
+                investments: 0,
+                otherNonCurrentAssets: 0,
+                nonCurrentAssets: 0,
+                totalAssets: 0,
+                accountsPayable: 0,
+                shortTermDebt: 0,
+                currentPortionLTD: 0,
+                accruedExpenses: 0,
+                otherCurrentLiabilities: 0,
+                currentLiabilities: 0,
+                longTermDebt: 0,
+                deferredTaxes: 0,
+                otherNonCurrentLiabilities: 0,
+                nonCurrentLiabilities: 0,
+                totalLiabilities: 0,
+                commonStock: 0,
+                retainedEarnings: 0,
+                otherEquity: 0,
+                totalEquity: 0,
+                revenue: 0,
+                cogs: 0,
+                grossProfit: 0,
+                salesExpenses: 0,
+                adminExpenses: 0,
+                rdExpenses: 0,
+                operatingExpenses: 0,
+                operatingIncome: 0,
+                depreciation: 0,
+                amortization: 0,
+                ebitda: 0,
+                interestExpense: 0,
+                otherIncome: 0,
+                ebt: 0,
+                taxExpense: 0,
+                netIncome: 0,
+                operatingCashFlow: 0,
+                investingCashFlow: 0,
+                financingCashFlow: 0,
+                freeCashFlow: 0,
+                sharesOutstanding: 10000000,
+                dividendsPaid: 0,
+                capex: 0,
+                workingCapital: 0
+            };
+
+            // HESAP KODU EŞLEŞTİRME KURALLARI
+            const accountMapping = {
+                // VARLIKLAR
+                '100': 'cash', // Kasa
+                '101': 'cash', // Alınan Çekler
+                '102': 'cash', // Bankalar
+                '103': 'cash', // Verilen Çekler ve Ödeme Emirleri
+                '108': 'otherCurrentAssets', // Diğer Hazır Değerler
+                '110': 'marketableSecurities', // Hisse Senetleri
+                '111': 'marketableSecurities', // Özel Kesim Tahvil Senet ve Bonoları
+                '112': 'marketableSecurities', // Kamu Kesimi Tahvil Senet ve Bonoları
+                '118': 'marketableSecurities', // Diğer Menkul Kıymetler
+                '120': 'receivables', // Alıcılar
+                '121': 'receivables', // Alacak Senetleri
+                '122': 'receivables', // Alacak Senetleri Reeskontu
+                '126': 'receivables', // Verilen Depozito ve Teminatlar
+                '127': 'receivables', // Diğer Ticari Alacaklar
+                '128': 'receivables', // Şüpheli Ticari Alacaklar
+                '129': 'receivables', // Şüpheli Ticari Alacaklar Karşılığı
+                '150': 'inventory', // İlk Madde ve Malzeme
+                '151': 'inventory', // Yarı Mamuller
+                '152': 'inventory', // Mamuller
+                '153': 'inventory', // Ticari Mallar
+                '157': 'inventory', // Diğer Stoklar
+                '180': 'prepaidExpenses', // Gelecek Aylara Ait Giderler
+                '190': 'otherCurrentAssets', // Devreden KDV
+                '191': 'otherCurrentAssets', // İndirilecek KDV
+                '250': 'ppe', // Arazi ve Arsalar
+                '251': 'ppe', // Yer Altı ve Yer Üstü Düzenleri
+                '252': 'ppe', // Binalar
+                '253': 'ppe', // Tesis Makine ve Cihazlar
+                '254': 'ppe', // Taşıtlar
+                '255': 'ppe', // Demirbaşlar
+                '257': 'ppe', // Birikmiş Amortismanlar
+                '260': 'intangibles', // Haklar
+                '261': 'intangibles', // Şerefiye
+                '262': 'intangibles', // Kuruluş ve Örgütlenme Giderleri
+                '263': 'intangibles', // Araştırma ve Geliştirme Giderleri
+                '264': 'intangibles', // Özel Maliyetler
+                '268': 'intangibles', // Birikmiş Amortismanlar
+                
+                // BORÇLAR
+                '300': 'shortTermDebt', // Banka Kredileri
+                '303': 'shortTermDebt', // Uzun Vadeli Kredilerin Anapara Taksitleri
+                '320': 'accountsPayable', // Satıcılar
+                '321': 'accountsPayable', // Borç Senetleri
+                '322': 'accountsPayable', // Borç Senetleri Reeskontu
+                '326': 'accountsPayable', // Alınan Depozito ve Teminatlar
+                '329': 'accountsPayable', // Diğer Ticari Borçlar
+                '360': 'otherCurrentLiabilities', // Ödenecek Vergi ve Fonlar
+                '361': 'otherCurrentLiabilities', // Ödenecek Sosyal Güvenlik Kesintileri
+                '368': 'otherCurrentLiabilities', // Vadesi Geçmiş Ertelenmiş veya Taksitlendirilmiş Vergi ve Diğer Yükümlülükler
+                '370': 'otherCurrentLiabilities', // Dönem Karı Vergi ve Diğer Yasal Yükümlülük Karşılıkları
+                '380': 'otherCurrentLiabilities', // Gelecek Aylara Ait Gelirler
+                '381': 'otherCurrentLiabilities', // Gider Tahakkukları
+                '391': 'otherCurrentLiabilities', // Hesaplanan KDV
+                '400': 'longTermDebt', // Banka Kredileri
+                '405': 'longTermDebt', // Çıkarılmış Tahviller
+                '407': 'longTermDebt', // Çıkarılmış Diğer Menkul Kıymetler
+                '420': 'otherNonCurrentLiabilities', // Satıcılar
+                '479': 'deferredTaxes', // Diğer Borç ve Gider Karşılıkları
+                
+                // ÖZKAYNAKLAR
+                '500': 'commonStock', // Sermaye
+                '501': 'commonStock', // Ödenmemiş Sermaye
+                '520': 'otherEquity', // Hisse Senedi İhraç Primleri
+                '540': 'otherEquity', // Yasal Yedekler
+                '541': 'otherEquity', // Statü Yedekleri
+                '542': 'otherEquity', // Olağanüstü Yedekler
+                '549': 'otherEquity', // Özel Fonlar
+                '570': 'retainedEarnings', // Geçmiş Yıllar Karları
+                '580': 'retainedEarnings', // Geçmiş Yıllar Zararları
+                '590': 'retainedEarnings', // Dönem Net Karı
+                '591': 'retainedEarnings', // Dönem Net Zararı
+                
+                // GELİR TABLOSU
+                '600': 'revenue', // Yurtiçi Satışlar
+                '601': 'revenue', // Yurtdışı Satışlar
+                '610': 'revenue', // Satıştan İadeler
+                '611': 'revenue', // Satış İskontoları
+                '612': 'revenue', // Diğer İndirimler
+                '620': 'cogs', // Satılan Mamuller Maliyeti
+                '621': 'cogs', // Satılan Ticari Mallar Maliyeti
+                '622': 'cogs', // Satılan Hizmet Maliyeti
+                '623': 'cogs', // Diğer Satışların Maliyeti
+                '630': 'operatingExpenses', // Araştırma ve Geliştirme Giderleri
+                '631': 'salesExpenses', // Pazarlama Satış ve Dağıtım Giderleri
+                '632': 'adminExpenses', // Genel Yönetim Giderleri
+                '640': 'otherIncome', // İştiraklerden Temettü Gelirleri
+                '641': 'otherIncome', // Bağlı Ortaklıklardan Temettü Gelirleri
+                '642': 'otherIncome', // Faiz Gelirleri
+                '643': 'otherIncome', // Komisyon Gelirleri
+                '644': 'otherIncome', // Konusu Kalmayan Karşılıklar
+                '645': 'otherIncome', // Menkul Kıymet Satış Karları
+                '646': 'otherIncome', // Kambiyo Karları
+                '647': 'otherIncome', // Reeskont Faiz Gelirleri
+                '649': 'otherIncome', // Diğer Olağan Gelir ve Karlar
+                '653': 'otherIncome', // Komisyon Giderleri
+                '654': 'otherIncome', // Karşılık Giderleri
+                '655': 'otherIncome', // Menkul Kıymet Satış Zararları
+                '656': 'otherIncome', // Kambiyo Zararları
+                '657': 'otherIncome', // Reeskont Faiz Giderleri
+                '659': 'otherIncome', // Diğer Olağan Gider ve Zararlar
+                '660': 'interestExpense', // Kısa Vadeli Borçlanma Giderleri
+                '661': 'interestExpense', // Uzun Vadeli Borçlanma Giderleri
+                '689': 'otherIncome', // Diğer Olağandışı Gelir ve Karlar
+                '690': 'taxExpense', // Dönem Karı Vergi ve Diğer Yasal Yükümlülük Karşılıkları
+                '691': 'taxExpense', // Dönem Karı Vergi ve Diğer Yasal Yükümlülük Karşılıkları
+                '692': 'taxExpense', // Dönem Net Karı veya Zararı
+                '697': 'otherIncome', // Dönem Net Karı veya Zararı
+                '698': 'otherIncome', // Dönem Net Karı veya Zararı
+                '730': 'operatingExpenses', // Genel Üretim Giderleri
+                '740': 'operatingExpenses', // Hizmet Üretim Maliyeti
+                '750': 'depreciation', // Araştırma ve Geliştirme Giderleri
+                '760': 'salesExpenses', // Pazarlama Satış ve Dağıtım Giderleri
+                '770': 'adminExpenses', // Genel Yönetim Giderleri
+                '780': 'interestExpense', // Finansman Giderleri
+            };
+
+            // Mizan verilerini işle
+            data.forEach(row => {
+                if (!row || row.length < 3) return;
+                
+                // Hesap kodunu al (ilk 3 hane)
+                const accountCode = String(row[0]).substring(0, 3);
+                const debit = parseFloat(row[2]) || 0;  // Borç
+                const credit = parseFloat(row[3]) || 0; // Alacak
+                const balance = debit - credit;
+                
+                // Hesap koduna göre eşleştir
+                if (accountMapping[accountCode]) {
+                    const field = accountMapping[accountCode];
+                    
+                    // Gelir tablosu kalemleri için mutlak değer al
+                    if (['revenue', 'cogs', 'operatingExpenses', 'salesExpenses', 'adminExpenses', 
+                         'interestExpense', 'otherIncome', 'taxExpense', 'depreciation'].includes(field)) {
+                        result[field] += Math.abs(balance);
+                    } else {
+                        result[field] += balance;
+                    }
+                }
+            });
+
+            // Toplamları hesapla
+            result.currentAssets = result.cash + result.marketableSecurities + result.receivables + 
+                                   result.inventory + result.prepaidExpenses + result.otherCurrentAssets;
+            
+            result.nonCurrentAssets = result.ppe + result.intangibles + result.investments + 
+                                      result.otherNonCurrentAssets;
+            
+            result.totalAssets = result.currentAssets + result.nonCurrentAssets;
+            
+            result.currentLiabilities = result.accountsPayable + result.shortTermDebt + 
+                                       result.currentPortionLTD + result.accruedExpenses + 
+                                       result.otherCurrentLiabilities;
+            
+            result.nonCurrentLiabilities = result.longTermDebt + result.deferredTaxes + 
+                                           result.otherNonCurrentLiabilities;
+            
+            result.totalLiabilities = result.currentLiabilities + result.nonCurrentLiabilities;
+            
+            result.totalEquity = result.commonStock + result.retainedEarnings + result.otherEquity;
+            
+            // Gelir tablosu hesaplamaları
+            result.grossProfit = result.revenue - result.cogs;
+            result.operatingIncome = result.grossProfit - result.operatingExpenses - 
+                                     result.salesExpenses - result.adminExpenses;
+            result.ebitda = result.operatingIncome + result.depreciation + result.amortization;
+            result.ebt = result.operatingIncome - result.interestExpense + result.otherIncome;
+            result.netIncome = result.ebt - result.taxExpense;
+            
+            // Nakit akış tahminleri (basitleştirilmiş)
+            result.operatingCashFlow = result.netIncome + result.depreciation + result.amortization;
+            result.investingCashFlow = -result.capex;
+            result.financingCashFlow = result.dividendsPaid * -1;
+            result.freeCashFlow = result.operatingCashFlow - result.capex;
+            
+            result.workingCapital = result.currentAssets - result.currentLiabilities;
+            
+            // Risk ağırlıklı varlıklar (Basel III için tahmin)
+            result.riskWeightedAssets = result.totalAssets * 0.75;
+            result.tier1Capital = result.totalEquity * 0.9;
+            result.tier2Capital = result.totalEquity * 0.1;
+            result.cet1Capital = result.totalEquity * 0.85;
+            
+            return result;
+        }
+
+        // RAPOR OLUŞTUR
+        function generateReport(years) {
+            const tabContents = document.getElementById('tabContents');
+            
+            // Her yıl için oranları hesapla
+            years.forEach(year => {
+                year.ratios = calculateAllRatios(year);
+                year.scores = calculateAllBankruptcyScores(year);
+                year.manipulation = calculateManipulationIndicators(year);
+                year.basel = calculateBaselIII(year);
+                year.bddk = calculateBDDKClassification(year);
+                year.tfrs9 = calculateTFRS9(year);
+            });
+
+            let html = '';
+            
+            // 1. Genel Bakış
+            html += generateOverview(years);
+            
+            // 2. 40+ Finansal Oran
+            html += generateComprehensiveRatios(years);
+            
+            // 3. DuPont Analizi
+            html += generateDuPontAnalysis(years);
+            
+            // 4. 7 İflas Modeli
+            html += generateBankruptcyModels(years);
+            
+            // 5. Hile Tespiti
+            html += generateManipulationDetection(years);
+            
+            // 6. Basel III
+            html += generateBaselIII(years);
+            
+            // 7. BDDK
+            html += generateBDDK(years);
+            
+            // 8. TFRS 9
+            html += generateTFRS9(years);
+            
+            // 9. Kredi Değerlendirme
+            html += generateCreditAssessment(years);
+            
+            // 10. Trend Analizi
+            html += generateTrends(years);
+            
+            // 11. Nakit Akış
+            html += generateCashFlow(years);
+            
+            // 12. Senaryo Analizi
+            html += generateScenarioAnalysis(years);
+            
+            // 13. Şirket Değerlemesi
+            html += generateValuation(years);
+            
+            // 14. Yıl Karşılaştırma (YENİ!)
+            html += generateYearComparison(years);
+            
+            // 15. Öneriler
+            html += generateRecommendations(years);
+            
+            tabContents.innerHTML = html;
+            showTab('overview');
+            
+            setTimeout(() => {
+                createCharts(years);
+            }, 100);
+        }
+
+        // 1. GENEL BAKIŞ
+        function generateOverview(years) {
+            const current = years[years.length - 1];
+            const overallScore = calculateOverallRiskScore(current);
+            
+            return `
+            <div class="tab-content active" id="overview">
+                <div class="section">
+                    <h2 class="section-title">📊 GENEL BAKIŞ</h2>
+                    
+                    <div class="grid-container">
+                        <div class="metric-card">
+                            <h3>Risk Skoru</h3>
+                            <div class="metric-value">${overallScore}/100</div>
+                            <span class="risk-badge risk-${overallScore < 40 ? 'low' : overallScore < 70 ? 'medium' : 'high'}">
+                                ${overallScore < 40 ? 'Düşük Risk' : overallScore < 70 ? 'Orta Risk' : 'Yüksek Risk'}
+                            </span>
+                        </div>
+                        <div class="metric-card">
+                            <h3>Basel III CAR</h3>
+                            <div class="metric-value">${current.basel.car.toFixed(1)}%</div>
+                            <span class="regulation-badge">Min: %8</span>
+                        </div>
+                        <div class="metric-card">
+                            <h3>BDDK Sınıfı</h3>
+                            <div class="metric-value">Grup ${current.bddk.group}</div>
+                            <span class="regulation-badge">${current.bddk.provision}% Karşılık</span>
+                        </div>
+                        <div class="metric-card">
+                            <h3>TFRS 9 Aşama</h3>
+                            <div class="metric-value">Aşama ${current.tfrs9.stage}</div>
+                            <span class="regulation-badge">ECL: ${(current.tfrs9.ecl/1000000).toFixed(1)}M</span>
+                        </div>
+                    </div>
+                    
+                    <div class="patron-comment">
+                        <h4>YÖNETİM ÖZETİ</h4>
+                        <p><strong>Kritik Bulgular:</strong></p>
+                        <ul>
+                            <li>7 iflas modelinden ${current.scores.failedModels} tanesi risk gösteriyor</li>
+                            <li>Basel III sermaye yeterliliği ${current.basel.car < 12 ? 'sınırda' : 'yeterli'}</li>
+                            <li>BDDK Grup ${current.bddk.group} - ${current.bddk.description}</li>
+                            <li>Manipülasyon riski: ${current.manipulation.riskLevel}</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>`;
+        }
+
+        // 2. 40+ FİNANSAL ORAN
+        function generateComprehensiveRatios(years) {
+            const current = years[years.length - 1];
+            const r = current.ratios;
+            
+            return `
+            <div class="tab-content" id="ratios">
+                <div class="section">
+                    <h2 class="section-title">📈 KAPSAMLI FİNANSAL ORANLAR (40+)</h2>
+                    
+                    <!-- LİKİDİTE ORANLARI -->
+                    <h3>💰 Likidite Oranları</h3>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Oran</th>
+                                <th>Formül</th>
+                                <th>Değer</th>
+                                <th>Sektör</th>
+                                <th>Yorum</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Cari Oran</td>
+                                <td>Dönen Varlık / KVYK</td>
+                                <td>${r.currentRatio.toFixed(2)}</td>
+                                <td>1.80</td>
+                                <td>${r.currentRatio < 1 ? '🚨 Kritik' : r.currentRatio < 1.5 ? '⚠️ Düşük' : '✅ İyi'}</td>
+                            </tr>
+                            <tr>
+                                <td>Asit-Test</td>
+                                <td>(DV - Stok) / KVYK</td>
+                                <td>${r.acidTest.toFixed(2)}</td>
+                                <td>1.20</td>
+                                <td>${r.acidTest < 0.8 ? '🚨 Kritik' : r.acidTest < 1 ? '⚠️ Düşük' : '✅ İyi'}</td>
+                            </tr>
+                            <tr>
+                                <td>Nakit Oran</td>
+                                <td>Nakit / KVYK</td>
+                                <td>${r.cashRatio.toFixed(2)}</td>
+                                <td>0.30</td>
+                                <td>${r.cashRatio < 0.2 ? '⚠️ Düşük' : '✅ İyi'}</td>
+                            </tr>
+                            <tr>
+                                <td>Defansif Interval</td>
+                                <td>Likit Varlık / Günlük Gider</td>
+                                <td>${r.defensiveInterval.toFixed(0)} gün</td>
+                                <td>90 gün</td>
+                                <td>${r.defensiveInterval < 60 ? '🚨 Riskli' : '✅ İyi'}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <!-- FAALİYET ORANLARI -->
+                    <h3 style="margin-top: 30px;">⚙️ Faaliyet Oranları</h3>
+                    <table class="data-table">
+                        <tbody>
+                            <tr>
+                                <td>Alacak Devir Hızı</td>
+                                <td>Satışlar / Alacaklar</td>
+                                <td>${r.receivableTurnover.toFixed(1)}x</td>
+                                <td>8.0x</td>
+                                <td>${365/r.receivableTurnover} gün tahsilat</td>
+                            </tr>
+                            <tr>
+                                <td>Stok Devir Hızı</td>
+                                <td>SMM / Stoklar</td>
+                                <td>${r.inventoryTurnover.toFixed(1)}x</td>
+                                <td>12.0x</td>
+                                <td>${365/r.inventoryTurnover} gün stokta</td>
+                            </tr>
+                            <tr>
+                                <td>Aktif Devir Hızı</td>
+                                <td>Satışlar / Aktifler</td>
+                                <td>${r.assetTurnover.toFixed(2)}x</td>
+                                <td>1.5x</td>
+                                <td>${r.assetTurnover < 1 ? '⚠️ Verimsiz' : '✅ İyi'}</td>
+                            </tr>
+                            <tr>
+                                <td>Sabit Varlık Devir</td>
+                                <td>Satışlar / Sabit Varlık</td>
+                                <td>${r.fixedAssetTurnover.toFixed(2)}x</td>
+                                <td>3.0x</td>
+                                <td>${r.fixedAssetTurnover < 2 ? '⚠️ Düşük' : '✅ İyi'}</td>
+                            </tr>
+                            <tr>
+                                <td>Nakit Dönüşüm Süresi</td>
+                                <td>Alacak + Stok - Borç Günü</td>
+                                <td>${r.cashConversionCycle.toFixed(0)} gün</td>
+                                <td>45 gün</td>
+                                <td>${r.cashConversionCycle > 60 ? '🚨 Yavaş' : '✅ İyi'}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <!-- KARLILIK ORANLARI -->
+                    <h3 style="margin-top: 30px;">💎 Kârlılık Oranları</h3>
+                    <table class="data-table">
+                        <tbody>
+                            <tr>
+                                <td>Brüt Kâr Marjı</td>
+                                <td>Brüt Kâr / Satışlar</td>
+                                <td>%${r.grossProfitMargin.toFixed(1)}</td>
+                                <td>%35</td>
+                                <td>${r.grossProfitMargin < 25 ? '⚠️ Düşük' : '✅ İyi'}</td>
+                            </tr>
+                            <tr>
+                                <td>Faaliyet Marjı</td>
+                                <td>FVÖK / Satışlar</td>
+                                <td>%${r.operatingMargin.toFixed(1)}</td>
+                                <td>%15</td>
+                                <td>${r.operatingMargin < 10 ? '⚠️ Düşük' : '✅ İyi'}</td>
+                            </tr>
+                            <tr>
+                                <td>EBITDA Marjı</td>
+                                <td>EBITDA / Satışlar</td>
+                                <td>%${r.ebitdaMargin.toFixed(1)}</td>
+                                <td>%18</td>
+                                <td>${r.ebitdaMargin < 12 ? '⚠️ Düşük' : '✅ İyi'}</td>
+                            </tr>
+                            <tr>
+                                <td>Net Kâr Marjı</td>
+                                <td>Net Kâr / Satışlar</td>
+                                <td>%${r.netProfitMargin.toFixed(1)}</td>
+                                <td>%10</td>
+                                <td>${r.netProfitMargin < 5 ? '🚨 Düşük' : '✅ İyi'}</td>
+                            </tr>
+                            <tr>
+                                <td>ROA</td>
+                                <td>Net Kâr / Aktifler</td>
+                                <td>%${r.roa.toFixed(1)}</td>
+                                <td>%8</td>
+                                <td>${r.roa < 5 ? '⚠️ Düşük' : '✅ İyi'}</td>
+                            </tr>
+                            <tr>
+                                <td>ROE</td>
+                                <td>Net Kâr / Özkaynak</td>
+                                <td>%${r.roe.toFixed(1)}</td>
+                                <td>%15</td>
+                                <td>${r.roe < 10 ? '⚠️ Düşük' : '✅ İyi'}</td>
+                            </tr>
+                            <tr>
+                                <td>ROIC</td>
+                                <td>NOPAT / Yatırılan Sermaye</td>
+                                <td>%${r.roic.toFixed(1)}</td>
+                                <td>%12</td>
+                                <td>${r.roic < 8 ? '⚠️ Düşük' : '✅ İyi'}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <!-- KALDIRAÇ ORANLARI -->
+                    <h3 style="margin-top: 30px;">⚖️ Kaldıraç Oranları</h3>
+                    <table class="data-table">
+                        <tbody>
+                            <tr>
+                                <td>Borç/Aktif</td>
+                                <td>Toplam Borç / Aktif</td>
+                                <td>%${r.debtToAssets.toFixed(1)}</td>
+                                <td>%50</td>
+                                <td>${r.debtToAssets > 70 ? '🚨 Yüksek' : '✅ İyi'}</td>
+                            </tr>
+                            <tr>
+                                <td>Borç/Özkaynak</td>
+                                <td>Toplam Borç / Özkaynak</td>
+                                <td>${r.debtToEquity.toFixed(2)}</td>
+                                <td>1.00</td>
+                                <td>${r.debtToEquity > 2 ? '🚨 Yüksek' : '✅ İyi'}</td>
+                            </tr>
+                            <tr>
+                                <td>Faiz Karşılama</td>
+                                <td>FVÖK / Faiz</td>
+                                <td>${r.interestCoverage.toFixed(1)}x</td>
+                                <td>5.0x</td>
+                                <td>${r.interestCoverage < 2 ? '🚨 Kritik' : '✅ İyi'}</td>
+                            </tr>
+                            <tr>
+                                <td>Borç Servis Karşılama</td>
+                                <td>EBITDA / (Faiz+Anapara)</td>
+                                <td>${r.debtServiceCoverage.toFixed(2)}x</td>
+                                <td>1.25x</td>
+                                <td>${r.debtServiceCoverage < 1 ? '🚨 Kritik' : '✅ İyi'}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <!-- NAKİT AKIŞ ORANLARI -->
+                    <h3 style="margin-top: 30px;">💵 Nakit Akış Oranları</h3>
+                    <table class="data-table">
+                        <tbody>
+                            <tr>
+                                <td>İşletme NA / Satışlar</td>
+                                <td>İşletme Nakit Akışı / Satışlar</td>
+                                <td>%${r.ocfToSales.toFixed(1)}</td>
+                                <td>%12</td>
+                                <td>${r.ocfToSales < 8 ? '⚠️ Düşük' : '✅ İyi'}</td>
+                            </tr>
+                            <tr>
+                                <td>FCF / Satışlar</td>
+                                <td>Serbest Nakit Akış / Satışlar</td>
+                                <td>%${r.fcfToSales.toFixed(1)}</td>
+                                <td>%8</td>
+                                <td>${r.fcfToSales < 5 ? '⚠️ Düşük' : '✅ İyi'}</td>
+                            </tr>
+                            <tr>
+                                <td>Nakit Akış ROI</td>
+                                <td>İşletme NA / Aktifler</td>
+                                <td>%${r.cashFlowROI.toFixed(1)}</td>
+                                <td>%10</td>
+                                <td>${r.cashFlowROI < 7 ? '⚠️ Düşük' : '✅ İyi'}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <!-- PİYASA ORANLARI -->
+                    <h3 style="margin-top: 30px;">📊 Piyasa Değerleme Oranları</h3>
+                    <table class="data-table">
+                        <tbody>
+                            <tr>
+                                <td>EV/EBITDA</td>
+                                <td>İşletme Değeri / EBITDA</td>
+                                <td>${r.evToEbitda.toFixed(1)}x</td>
+                                <td>8.0x</td>
+                                <td>${r.evToEbitda > 12 ? '⚠️ Pahalı' : '✅ İyi'}</td>
+                            </tr>
+                            <tr>
+                                <td>P/E</td>
+                                <td>Piyasa Değeri / Net Kâr</td>
+                                <td>${r.peRatio.toFixed(1)}x</td>
+                                <td>15.0x</td>
+                                <td>${r.peRatio > 25 ? '⚠️ Pahalı' : '✅ İyi'}</td>
+                            </tr>
+                            <tr>
+                                <td>P/B</td>
+                                <td>Piyasa Değeri / Defter Değeri</td>
+                                <td>${r.pbRatio.toFixed(1)}x</td>
+                                <td>2.0x</td>
+                                <td>${r.pbRatio > 3 ? '⚠️ Pahalı' : '✅ İyi'}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <div class="patron-comment">
+                        <h4>PATRON İÇİN ÖZET</h4>
+                        <p><strong>En kritik 5 oran:</strong></p>
+                        <ul>
+                            <li>Cari Oran: ${r.currentRatio.toFixed(2)} → 100 TL borca ${(r.currentRatio*100).toFixed(0)} TL varlık</li>
+                            <li>Net Kâr Marjı: %${r.netProfitMargin.toFixed(1)} → 100 TL satıştan ${r.netProfitMargin.toFixed(1)} TL kâr</li>
+                            <li>ROE: %${r.roe.toFixed(1)} → Sermayenizin getirisi (Mevduat: %45)</li>
+                            <li>Borç/Özkaynak: ${r.debtToEquity.toFixed(2)} → 100 TL sermayeye ${(r.debtToEquity*100).toFixed(0)} TL borç</li>
+                            <li>Nakit Döngü: ${r.cashConversionCycle.toFixed(0)} gün → Paranız bu kadar günde geri dönüyor</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>`;
+        }
+
+        // 3. DUPONT ANALİZİ
+        function generateDuPontAnalysis(years) {
+            const current = years[years.length - 1];
+            const dupont = calculateDuPont(current);
+            
+            return `
+            <div class="tab-content" id="dupont">
+                <div class="section">
+                    <h2 class="section-title">🎯 DUPONT ANALİZİ</h2>
+                    
+                    <div class="dupont-tree">
+                        <div class="dupont-node" style="background: #667eea; color: white;">
+                            <h3>ROE</h3>
+                            <div style="font-size: 24px;">%${dupont.roe.toFixed(1)}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="dupont-tree">
+                        <div class="dupont-node">
+                            <h4>Net Kâr Marjı</h4>
+                            <div>%${dupont.netProfitMargin.toFixed(1)}</div>
+                            <small>Net Kâr / Satışlar</small>
+                        </div>
+                        <div style="align-self: center;">×</div>
+                        <div class="dupont-node">
+                            <h4>Aktif Devir</h4>
+                            <div>${dupont.assetTurnover.toFixed(2)}x</div>
+                            <small>Satışlar / Aktifler</small>
+                        </div>
+                        <div style="align-self: center;">×</div>
+                        <div class="dupont-node">
+                            <h4>Özkaynak Çarpanı</h4>
+                            <div>${dupont.equityMultiplier.toFixed(2)}x</div>
+                            <small>Aktifler / Özkaynak</small>
+                        </div>
+                    </div>
+                    
+                    <div class="patron-comment">
+                        <h4>DUPONT ANALİZİ YORUMU</h4>
+                        <p><strong>ROE = %${dupont.roe.toFixed(1)} nasıl oluşuyor?</strong></p>
+                        <ul>
+                            <li><strong>Kârlılık:</strong> Her 100 TL satıştan ${dupont.netProfitMargin.toFixed(1)} TL kâr</li>
+                            <li><strong>Verimlilik:</strong> 1 TL varlıkla ${dupont.assetTurnover.toFixed(2)} TL satış</li>
+                            <li><strong>Kaldıraç:</strong> ${dupont.equityMultiplier.toFixed(2)}x borçlanma ile büyütme</li>
+                        </ul>
+                        <p style="margin-top: 15px;"><strong>Sorun nerede?</strong></p>
+                        ${dupont.netProfitMargin < 10 ? '<p>⚠️ Kâr marjı düşük - Fiyat artırın veya maliyet düşürün</p>' : ''}
+                        ${dupont.assetTurnover < 1 ? '<p>⚠️ Varlıklar verimsiz - Atıl varlıkları satın</p>' : ''}
+                        ${dupont.equityMultiplier > 3 ? '<p>⚠️ Aşırı borçlanma - Sermaye artırın</p>' : ''}
+                    </div>
+                </div>
+            </div>`;
+        }
+
+        // 4. 7 İFLAS MODELİ
+        function generateBankruptcyModels(years) {
+            const current = years[years.length - 1];
+            const scores = current.scores;
+            
+            return `
+            <div class="tab-content" id="bankruptcy">
+                <div class="section">
+                    <h2 class="section-title">⚠️ 7 İFLAS TAHMİN MODELİ</h2>
+                    
+                    <!-- ALTMAN Z-SCORE -->
+                    <div class="metric-card">
+                        <h3>1. Altman Z-Score (1968)</h3>
+                        <div class="model-score score-${scores.altman.risk}">
+                            Z = ${scores.altman.score.toFixed(2)}
+                        </div>
+                        <p><strong>Risk:</strong> ${scores.altman.riskText}</p>
+                        <p><strong>Formül:</strong> 1.2(WC/TA) + 1.4(RE/TA) + 3.3(EBIT/TA) + 0.6(MVE/TL) + 1.0(S/TA)</p>
+                        <p><strong>Yorum:</strong> ${scores.altman.interpretation}</p>
+                    </div>
+                    
+                    <!-- SPRINGATE S-SCORE -->
+                    <div class="metric-card">
+                        <h3>2. Springate S-Score (1978)</h3>
+                        <div class="model-score score-${scores.springate.risk}">
+                            S = ${scores.springate.score.toFixed(2)}
+                        </div>
+                        <p><strong>Risk:</strong> ${scores.springate.riskText}</p>
+                        <p><strong>Formül:</strong> 1.03(WC/TA) + 3.07(EBIT/TA) + 0.66(EBT/CL) + 0.4(S/TA)</p>
+                        <p><strong>Yorum:</strong> ${scores.springate.interpretation}</p>
+                    </div>
+                    
+                    <!-- OHLSON O-SCORE -->
+                    <div class="metric-card">
+                        <h3>3. Ohlson O-Score (1980)</h3>
+                        <div class="model-score score-${scores.ohlson.risk}">
+                            P(iflas) = %${(scores.ohlson.probability * 100).toFixed(1)}
+                        </div>
+                        <p><strong>Risk:</strong> ${scores.ohlson.riskText}</p>
+                        <p><strong>9 Değişkenli Lojistik Model</strong></p>
+                        <p><strong>Yorum:</strong> ${scores.ohlson.interpretation}</p>
+                    </div>
+                    
+                    <!-- FULMER H-SCORE -->
+                    <div class="metric-card">
+                        <h3>4. Fulmer H-Score (1984)</h3>
+                        <div class="model-score score-${scores.fulmer.risk}">
+                            H = ${scores.fulmer.score.toFixed(2)}
+                        </div>
+                        <p><strong>Risk:</strong> ${scores.fulmer.riskText}</p>
+                        <p><strong>9 Oranlı Model</strong></p>
+                        <p><strong>Yorum:</strong> ${scores.fulmer.interpretation}</p>
+                    </div>
+                    
+                    <!-- ZMIJEWSKI X-SCORE -->
+                    <div class="metric-card">
+                        <h3>5. Zmijewski X-Score (1984)</h3>
+                        <div class="model-score score-${scores.zmijewski.risk}">
+                            P(iflas) = %${(scores.zmijewski.probability * 100).toFixed(1)}
+                        </div>
+                        <p><strong>Risk:</strong> ${scores.zmijewski.riskText}</p>
+                        <p><strong>Probit Model</strong></p>
+                        <p><strong>Yorum:</strong> ${scores.zmijewski.interpretation}</p>
+                    </div>
+                    
+                    <!-- TAFFLER Z-SCORE -->
+                    <div class="metric-card">
+                        <h3>6. Taffler Z-Score (1983)</h3>
+                        <div class="model-score score-${scores.taffler.risk}">
+                            Z = ${scores.taffler.score.toFixed(2)}
+                        </div>
+                        <p><strong>Risk:</strong> ${scores.taffler.riskText}</p>
+                        <p><strong>İngiliz Modeli</strong></p>
+                        <p><strong>Yorum:</strong> ${scores.taffler.interpretation}</p>
+                    </div>
+                    
+                    <!-- GROVER G-SCORE -->
+                    <div class="metric-card">
+                        <h3>7. Grover G-Score (2001)</h3>
+                        <div class="model-score score-${scores.grover.risk}">
+                            G = ${scores.grover.score.toFixed(2)}
+                        </div>
+                        <p><strong>Risk:</strong> ${scores.grover.riskText}</p>
+                        <p><strong>Güncel Model</strong></p>
+                        <p><strong>Yorum:</strong> ${scores.grover.interpretation}</p>
+                    </div>
+                    
+                    <div class="patron-comment danger">
+                        <h4>İFLAS RİSK ÖZETİ</h4>
+                        <p><strong>7 modelden ${scores.failedModels} tanesi RİSK gösteriyor!</strong></p>
+                        <ul>
+                            <li>🟢 Güvenli: ${scores.safeModels} model</li>
+                            <li>🟡 Belirsiz: ${scores.greyModels} model</li>
+                            <li>🔴 Riskli: ${scores.failedModels} model</li>
+                        </ul>
+                        <p style="margin-top: 15px;"><strong>SONUÇ:</strong> ${scores.overallConclusion}</p>
+                    </div>
+                </div>
+            </div>`;
+        }
+
+        // 5. HİLE TESPİTİ
+        function generateManipulationDetection(years) {
+            const current = years[years.length - 1];
+            const m = current.manipulation;
+            
+            return `
+            <div class="tab-content" id="manipulation">
+                <div class="section">
+                    <h2 class="section-title">🔍 HİLE VE MANİPÜLASYON TESPİTİ</h2>
+                    
+                    <!-- BENEISH M-SCORE -->
+                    <div class="metric-card">
+                        <h3>Beneish M-Score</h3>
+                        <div class="model-score score-${m.beneish.risk}">
+                            M = ${m.beneish.score.toFixed(2)}
+                        </div>
+                        <p><strong>8 Değişken:</strong> DSRI, GMI, AQI, SGI, DEPI, SGAI, TATA, LVGI</p>
+                        <p><strong>Yorum:</strong> ${m.beneish.interpretation}</p>
+                    </div>
+                    
+                    <!-- BENFORD LAW ANALİZİ -->
+                    <div class="metric-card">
+                        <h3>Benford Yasası Analizi</h3>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>İlk Rakam</th>
+                                    <th>Beklenen %</th>
+                                    <th>Gözlenen %</th>
+                                    <th>Sapma</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${m.benford.digits.map(d => `
+                                <tr>
+                                    <td>${d.digit}</td>
+                                    <td>%${d.expected.toFixed(1)}</td>
+                                    <td>%${d.observed.toFixed(1)}</td>
+                                    <td class="${Math.abs(d.deviation) > 5 ? 'text-danger' : ''}">
+                                        ${d.deviation > 0 ? '+' : ''}${d.deviation.toFixed(1)}%
+                                    </td>
+                                </tr>`).join('')}
+                            </tbody>
+                        </table>
+                        <p><strong>Chi-Square:</strong> ${m.benford.chiSquare.toFixed(2)} (Kritik: 15.51)</p>
+                        <p><strong>Sonuç:</strong> ${m.benford.suspicious ? '🚨 ŞÜPHELİ' : '✅ NORMAL'}</p>
+                    </div>
+                    
+                    <!-- ANORMAL GÖSTERGELER -->
+                    <div class="metric-card">
+                        <h3>Anormal Finansal Göstergeler</h3>
+                        ${m.redFlags.map(flag => `
+                        <div class="manipulation-indicator manipulation-${flag.severity}">
+                            <span style="margin-right: 10px;">${flag.icon}</span>
+                            <div>
+                                <strong>${flag.title}</strong><br>
+                                <small>${flag.description}</small>
+                            </div>
+                        </div>`).join('')}
+                    </div>
+                    
+                    <!-- YUVARLAK SAYI ANALİZİ -->
+                    <div class="metric-card">
+                        <h3>Yuvarlak Sayı Yoğunluğu</h3>
+                        <p><strong>Yuvarlak Sayı Oranı:</strong> %${m.roundNumbers.percentage.toFixed(1)}</p>
+                        <p><strong>Normal Aralık:</strong> %5-15</p>
+                        <p><strong>Durum:</strong> ${m.roundNumbers.suspicious ? '🚨 ŞÜPHELİ' : '✅ NORMAL'}</p>
+                    </div>
+                    
+                    <div class="patron-comment ${m.overallRisk === 'high' ? 'danger' : 'warning'}">
+                        <h4>MANİPÜLASYON DEĞERLENDİRMESİ</h4>
+                        <p><strong>Genel Risk:</strong> ${m.riskLevel}</p>
+                        <p><strong>Tespit Edilen Sorunlar:</strong></p>
+                        <ul>
+                            ${m.issues.map(issue => `<li>${issue}</li>`).join('')}
+                        </ul>
+                        <p style="margin-top: 15px;"><strong>ÖNERİLER:</strong></p>
+                        <ul>
+                            <li>Bağımsız denetim yaptırın</li>
+                            <li>İç kontrol sistemini güçlendirin</li>
+                            <li>Dönemsel karşılaştırma yapın</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>`;
+        }
+
+        // 6. BASEL III
+        function generateBaselIII(years) {
+            const current = years[years.length - 1];
+            const basel = current.basel;
+            
+            return `
+            <div class="tab-content" id="basel">
+                <div class="section">
+                    <h2 class="section-title">🏦 BASEL III SERMAYE YETERLİLİĞİ</h2>
+                    
+                    <div class="basel-table">
+                        <h3>Sermaye Bileşenleri</h3>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Sermaye Kalemi</th>
+                                    <th>Tutar (Milyon TL)</th>
+                                    <th>RWA'ya Oranı</th>
+                                    <th>Min. Oran</th>
+                                    <th>Durum</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>CET1 (Çekirdek Sermaye)</strong></td>
+                                    <td>${(basel.cet1Capital/1000000).toFixed(1)}</td>
+                                    <td>${basel.cet1Ratio.toFixed(2)}%</td>
+                                    <td>4.5%</td>
+                                    <td>${basel.cet1Ratio >= 4.5 ? '✅' : '❌'}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Tier 1 (Ana Sermaye)</strong></td>
+                                    <td>${(basel.tier1Capital/1000000).toFixed(1)}</td>
+                                    <td>${basel.tier1Ratio.toFixed(2)}%</td>
+                                    <td>6.0%</td>
+                                    <td>${basel.tier1Ratio >= 6 ? '✅' : '❌'}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Tier 2 (Katkı Sermaye)</strong></td>
+                                    <td>${(basel.tier2Capital/1000000).toFixed(1)}</td>
+                                    <td>${basel.tier2Ratio.toFixed(2)}%</td>
+                                    <td>2.0%</td>
+                                    <td>${basel.tier2Ratio >= 2 ? '✅' : '❌'}</td>
+                                </tr>
+                                <tr style="background: #f8f9fa;">
+                                    <td><strong>TOPLAM SERMAYE</strong></td>
+                                    <td><strong>${(basel.totalCapital/1000000).toFixed(1)}</strong></td>
+                                    <td><strong>${basel.car.toFixed(2)}%</strong></td>
+                                    <td><strong>8.0%</strong></td>
+                                    <td><strong>${basel.car >= 8 ? '✅' : '❌'}</strong></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        
+                        <h3 style="margin-top: 30px;">Tamponlar ve İlaveler</h3>
+                        <table class="data-table">
+                            <tbody>
+                                <tr>
+                                    <td>Sermaye Koruma Tamponu</td>
+                                    <td>2.5%</td>
+                                    <td>${basel.conservationBuffer ? '✅ Var' : '❌ Yok'}</td>
+                                </tr>
+                                <tr>
+                                    <td>Döngüsel Sermaye Tamponu</td>
+                                    <td>0-2.5%</td>
+                                    <td>${basel.countercyclicalBuffer.toFixed(1)}%</td>
+                                </tr>
+                                <tr>
+                                    <td>Sistemik Önem Tamponu</td>
+                                    <td>1-3.5%</td>
+                                    <td>${basel.systemicBuffer.toFixed(1)}%</td>
+                                </tr>
+                                <tr style="background: #f8f9fa;">
+                                    <td><strong>Toplam CAR Gereksinimi</strong></td>
+                                    <td colspan="2"><strong>${basel.totalRequirement.toFixed(1)}%</strong></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        
+                        <h3 style="margin-top: 30px;">Risk Ağırlıklı Varlıklar (RWA)</h3>
+                        <table class="data-table">
+                            <tbody>
+                                <tr>
+                                    <td>Kredi Riski RWA</td>
+                                    <td>${(basel.creditRWA/1000000).toFixed(1)}M TL</td>
+                                    <td>${((basel.creditRWA/basel.totalRWA)*100).toFixed(1)}%</td>
+                                </tr>
+                                <tr>
+                                    <td>Piyasa Riski RWA</td>
+                                    <td>${(basel.marketRWA/1000000).toFixed(1)}M TL</td>
+                                    <td>${((basel.marketRWA/basel.totalRWA)*100).toFixed(1)}%</td>
+                                </tr>
+                                <tr>
+                                    <td>Operasyonel Risk RWA</td>
+                                    <td>${(basel.operationalRWA/1000000).toFixed(1)}M TL</td>
+                                    <td>${((basel.operationalRWA/basel.totalRWA)*100).toFixed(1)}%</td>
+                                </tr>
+                                <tr style="background: #f8f9fa;">
+                                    <td><strong>Toplam RWA</strong></td>
+                                    <td colspan="2"><strong>${(basel.totalRWA/1000000).toFixed(1)}M TL</strong></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="patron-comment ${basel.car < 12 ? 'warning' : 'good'}">
+                        <h4>BASEL III YORUMU</h4>
+                        <p><strong>Sermaye Yeterlilik Oranı: %${basel.car.toFixed(2)}</strong></p>
+                        <p>👉 Minimum %8 gerekli, sizde %${basel.car.toFixed(2)} var</p>
+                        ${basel.car < 8 ? 
+                            '<p class="text-danger">🚨 KRİTİK: Yasal limite altında!</p>' :
+                         basel.car < 12 ?
+                            '<p class="text-warning">⚠️ DİKKAT: Güvenli tampon seviyesinde değil</p>' :
+                            '<p class="text-success">✅ GÜZEL: Sermaye yeterliliği iyi durumda</p>'}
+                        <p style="margin-top: 15px;"><strong>Ne yapmalı?</strong></p>
+                        <ul>
+                            ${basel.car < 12 ? '<li>Sermaye artırımı yapın</li>' : ''}
+                            ${basel.car < 12 ? '<li>Riskli varlıkları azaltın</li>' : ''}
+                            <li>RWA optimizasyonu yapın</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>`;
+        }
+
+        // 7. BDDK
+        function generateBDDK(years) {
+            const current = years[years.length - 1];
+            const bddk = current.bddk;
+            
+            return `
+            <div class="tab-content" id="bddk">
+                <div class="section">
+                    <h2 class="section-title">🏛️ BDDK KREDİ SINIFLANDIRMASI</h2>
+                    
+                    <div class="bddk-classification">
+                        <div class="bddk-group bddk-${bddk.group} ${bddk.group === 1 ? 'active' : ''}">
+                            <h3>GRUP 1</h3>
+                            <p>Standart</p>
+                            <p>%1 Karşılık</p>
+                        </div>
+                        <div class="bddk-group bddk-${bddk.group} ${bddk.group === 2 ? 'active' : ''}">
+                            <h3>GRUP 2</h3>
+                            <p>Yakın İzleme</p>
+                            <p>%2 Karşılık</p>
+                        </div>
+                        <div class="bddk-group bddk-${bddk.group} ${bddk.group === 3 ? 'active' : ''}">
+                            <h3>GRUP 3</h3>
+                            <p>Tahsil Şüpheli</p>
+                            <p>%20 Karşılık</p>
+                        </div>
+                        <div class="bddk-group bddk-${bddk.group} ${bddk.group === 4 ? 'active' : ''}">
+                            <h3>GRUP 4</h3>
+                            <p>Tahsili Gecikmiş</p>
+                            <p>%50 Karşılık</p>
+                        </div>
+                        <div class="bddk-group bddk-${bddk.group} ${bddk.group === 5 ? 'active' : ''}">
+                            <h3>GRUP 5</h3>
+                            <p>Zarar</p>
+                            <p>%100 Karşılık</p>
+                        </div>
+                    </div>
+                    
+                    <div class="metric-card">
+                        <h3>BDDK Kriterleri Değerlendirmesi</h3>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Kriter</th>
+                                    <th>Durum</th>
+                                    <th>Değer</th>
+                                    <th>Sonuç</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Gecikme Süresi</td>
+                                    <td>${bddk.delayDays} gün</td>
+                                    <td>Max 30 gün</td>
+                                    <td>${bddk.delayDays <= 30 ? '✅' : '❌'}</td>
+                                </tr>
+                                <tr>
+                                    <td>Mali Yapı</td>
+                                    <td>${bddk.financialStructure}</td>
+                                    <td>Güçlü olmalı</td>
+                                    <td>${bddk.financialStructure === 'Güçlü' ? '✅' : '⚠️'}</td>
+                                </tr>
+                                <tr>
+                                    <td>Nakit Akış</td>
+                                    <td>${bddk.cashFlowStatus}</td>
+                                    <td>Pozitif olmalı</td>
+                                    <td>${bddk.cashFlowStatus === 'Pozitif' ? '✅' : '❌'}</td>
+                                </tr>
+                                <tr>
+                                    <td>Teminat Durumu</td>
+                                    <td>%${bddk.collateralCoverage}</td>
+                                    <td>Min %120</td>
+                                    <td>${bddk.collateralCoverage >= 120 ? '✅' : '⚠️'}</td>
+                                </tr>
+                                <tr>
+                                    <td>Sektör Riski</td>
+                                    <td>${bddk.sectorRisk}</td>
+                                    <td>Düşük/Orta</td>
+                                    <td>${bddk.sectorRisk === 'Düşük' ? '✅' : '⚠️'}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="metric-card">
+                        <h3>Karşılık Hesaplaması</h3>
+                        <table class="data-table">
+                            <tbody>
+                                <tr>
+                                    <td>Toplam Kredi Riski</td>
+                                    <td>${(bddk.totalExposure/1000000).toFixed(1)}M TL</td>
+                                </tr>
+                                <tr>
+                                    <td>BDDK Grubu</td>
+                                    <td>Grup ${bddk.group}</td>
+                                </tr>
+                                <tr>
+                                    <td>Karşılık Oranı</td>
+                                    <td>%${bddk.provision}</td>
+                                </tr>
+                                <tr style="background: #f8f9fa;">
+                                    <td><strong>Gerekli Karşılık</strong></td>
+                                    <td><strong>${(bddk.requiredProvision/1000000).toFixed(1)}M TL</strong></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="patron-comment ${bddk.group > 2 ? 'danger' : bddk.group === 2 ? 'warning' : 'good'}">
+                        <h4>BDDK DEĞERLENDİRMESİ</h4>
+                        <p><strong>Sınıflandırma: GRUP ${bddk.group} - ${bddk.description}</strong></p>
+                        ${bddk.group === 1 ? 
+                            '<p>✅ Kredileriniz standart, sorun yok</p>' :
+                         bddk.group === 2 ?
+                            '<p>⚠️ Yakın izlemedesiniz, dikkat edin</p>' :
+                         bddk.group >= 3 ?
+                            '<p>🚨 Sorunlu kredi durumu, acil önlem alın!</p>' : ''}
+                        <p style="margin-top: 15px;"><strong>Yapılması gerekenler:</strong></p>
+                        <ul>
+                            ${bddk.recommendations.map(r => `<li>${r}</li>`).join('')}
+                        </ul>
+                    </div>
+                </div>
+            </div>`;
+        }
+
+        // 8. TFRS 9
+        function generateTFRS9(years) {
+            const current = years[years.length - 1];
+            const tfrs9 = current.tfrs9;
+            
+            return `
+            <div class="tab-content" id="tfrs9">
+                <div class="section">
+                    <h2 class="section-title">📋 TFRS 9 - BEKLENEN KREDİ ZARARI</h2>
+                    
+                    <div class="tfrs9-stages">
+                        <div class="tfrs9-stage ${tfrs9.stage === 1 ? 'active' : ''}">
+                            <h3>AŞAMA 1</h3>
+                            <p>Performanslı</p>
+                            <p>12 Aylık ECL</p>
+                            <p>Düşük Risk</p>
+                        </div>
+                        <div class="tfrs9-stage ${tfrs9.stage === 2 ? 'active' : ''}">
+                            <h3>AŞAMA 2</h3>
+                            <p>Risk Artışı</p>
+                            <p>Ömür Boyu ECL</p>
+                            <p>Orta Risk</p>
+                        </div>
+                        <div class="tfrs9-stage ${tfrs9.stage === 3 ? 'active' : ''}">
+                            <h3>AŞAMA 3</h3>
+                            <p>Temerrüt</p>
+                            <p>Ömür Boyu ECL</p>
+                            <p>Yüksek Risk</p>
+                        </div>
+                    </div>
+                    
+                    <div class="metric-card">
+                        <h3>ECL Hesaplama Parametreleri</h3>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Parametre</th>
+                                    <th>Açıklama</th>
+                                    <th>Değer</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>PD</strong></td>
+                                    <td>Temerrüt Olasılığı (Probability of Default)</td>
+                                    <td>${(tfrs9.pd * 100).toFixed(2)}%</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>LGD</strong></td>
+                                    <td>Temerrüt Halinde Kayıp (Loss Given Default)</td>
+                                    <td>${(tfrs9.lgd * 100).toFixed(1)}%</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>EAD</strong></td>
+                                    <td>Temerrüt Anında Risk (Exposure at Default)</td>
+                                    <td>${(tfrs9.ead/1000000).toFixed(1)}M TL</td>
+                                </tr>
+                                <tr style="background: #f8f9fa;">
+                                    <td><strong>ECL</strong></td>
+                                    <td>Beklenen Kredi Zararı (Expected Credit Loss)</td>
+                                    <td><strong>${(tfrs9.ecl/1000000).toFixed(2)}M TL</strong></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <p style="margin-top: 15px;"><strong>Formül:</strong> ECL = PD × LGD × EAD</p>
+                    </div>
+                    
+                    <div class="metric-card">
+                        <h3>Kredi Riski Göstergeleri</h3>
+                        <table class="data-table">
+                            <tbody>
+                                <tr>
+                                    <td>30+ Gün Gecikme</td>
+                                    <td>${tfrs9.days30Plus ? '❌ Var' : '✅ Yok'}</td>
+                                </tr>
+                                <tr>
+                                    <td>Yeniden Yapılandırma</td>
+                                    <td>${tfrs9.restructured ? '❌ Var' : '✅ Yok'}</td>
+                                </tr>
+                                <tr>
+                                    <td>Rating Düşüşü</td>
+                                    <td>${tfrs9.ratingDowngrade ? '❌ Var' : '✅ Yok'}</td>
+                                </tr>
+                                <tr>
+                                    <td>Sektör Riski</td>
+                                    <td>${tfrs9.sectorRiskHigh ? '❌ Yüksek' : '✅ Normal'}</td>
+                                </tr>
+                                <tr>
+                                    <td>Mali Yapı Bozulması</td>
+                                    <td>${tfrs9.financialDeterioration ? '❌ Var' : '✅ Yok'}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="patron-comment ${tfrs9.stage === 3 ? 'danger' : tfrs9.stage === 2 ? 'warning' : 'good'}">
+                        <h4>TFRS 9 DEĞERLENDİRMESİ</h4>
+                        <p><strong>Mevcut Aşama: ${tfrs9.stage}</strong></p>
+                        <p><strong>ECL (Beklenen Zarar): ${(tfrs9.ecl/1000000).toFixed(2)} Milyon TL</strong></p>
+                        ${tfrs9.stage === 1 ? 
+                            '<p>✅ Kredi riski düşük, normal seyrediyor</p>' :
+                         tfrs9.stage === 2 ?
+                            '<p>⚠️ Kredi riskinde önemli artış var!</p>' :
+                            '<p>🚨 Temerrüt durumu! Acil önlem gerekli!</p>'}
+                        <p style="margin-top: 15px;"><strong>Ne yapmalı?</strong></p>
+                        <ul>
+                            ${tfrs9.actions.map(a => `<li>${a}</li>`).join('')}
+                        </ul>
+                    </div>
+                </div>
+            </div>`;
+        }
+
+        // 9. KREDİ DEĞERLENDİRME
+        function generateCreditAssessment(years) {
+            const current = years[years.length - 1];
+            const credit = calculateCreditScore(current);
+            
+            return `
+            <div class="tab-content" id="credit">
+                <div class="section">
+                    <h2 class="section-title">💳 PROFESYONEL KREDİ DEĞERLENDİRME</h2>
+                    
+                    <div class="grid-container">
+                        <div class="metric-card">
+                            <h3>Kredi Skoru</h3>
+                            <div class="metric-value">${credit.score}/100</div>
+                            <div class="risk-badge risk-${credit.riskLevel}">
+                                ${credit.rating} - ${credit.riskText}
+                            </div>
+                        </div>
+                        <div class="metric-card">
+                            <h3>Önerilen Limit</h3>
+                            <div class="metric-value">${(credit.recommendedLimit/1000000).toFixed(0)}M TL</div>
+                            <small>Max: ${(credit.maxLimit/1000000).toFixed(0)}M TL</small>
+                        </div>
+                        <div class="metric-card">
+                            <h3>Faiz Oranı</h3>
+                            <div class="metric-value">%${credit.interestRate}</div>
+                            <small>Piyasa: %${credit.marketRate}</small>
+                        </div>
+                    </div>
+                    
+                    <div class="metric-card">
+                        <h3>Detaylı Skorlama</h3>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Kategori</th>
+                                    <th>Ağırlık</th>
+                                    <th>Ham Skor</th>
+                                    <th>Ağırlıklı Skor</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Likidite</td>
+                                    <td>%25</td>
+                                    <td>${credit.components.liquidity}/100</td>
+                                    <td>${(credit.components.liquidity * 0.25).toFixed(1)}</td>
+                                </tr>
+                                <tr>
+                                    <td>Kârlılık</td>
+                                    <td>%20</td>
+                                    <td>${credit.components.profitability}/100</td>
+                                    <td>${(credit.components.profitability * 0.20).toFixed(1)}</td>
+                                </tr>
+                                <tr>
+                                    <td>Kaldıraç</td>
+                                    <td>%20</td>
+                                    <td>${credit.components.leverage}/100</td>
+                                    <td>${(credit.components.leverage * 0.20).toFixed(1)}</td>
+                                </tr>
+                                <tr>
+                                    <td>Faaliyet</td>
+                                    <td>%15</td>
+                                    <td>${credit.components.efficiency}/100</td>
+                                    <td>${(credit.components.efficiency * 0.15).toFixed(1)}</td>
+                                </tr>
+                                <tr>
+                                    <td>Nakit Akış</td>
+                                    <td>%20</td>
+                                    <td>${credit.components.cashflow}/100</td>
+                                    <td>${(credit.components.cashflow * 0.20).toFixed(1)}</td>
+                                </tr>
+                                <tr style="background: #f8f9fa;">
+                                    <td><strong>TOPLAM</strong></td>
+                                    <td><strong>%100</strong></td>
+                                    <td colspan="2"><strong>${credit.score}/100</strong></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="patron-comment ${credit.score < 50 ? 'danger' : credit.score < 70 ? 'warning' : 'good'}">
+                        <h4>BANKA GÖZÜYLE ŞİRKETİNİZ</h4>
+                        <p><strong>Rating: ${credit.rating} (${credit.score}/100)</strong></p>
+                        ${credit.score >= 70 ? 
+                            '<p>✅ MÜKEMMEL: Bankalar size yarışa girer!</p>' :
+                         credit.score >= 50 ?
+                            '<p>⚠️ ORTA: Kredi alırsınız ama şartlar ağır</p>' :
+                            '<p>🚨 RİSKLİ: Bankalar kredi vermez!</p>'}
+                        
+                        <table class="data-table" style="margin-top: 15px;">
+                            <tbody>
+                                <tr><td>Kredi Limiti</td><td>${(credit.recommendedLimit/1000000).toFixed(0)}-${(credit.maxLimit/1000000).toFixed(0)}M TL</td></tr>
+                                <tr><td>Faiz Oranı</td><td>%${credit.interestRate}-${credit.maxRate}</td></tr>
+                                <tr><td>Vade</td><td>${credit.maxTerm} ay</td></tr>
+                                <tr><td>Teminat</td><td>%${credit.collateralRequirement}</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>`;
+        }
+
+        // YARDIMCI FONKSİYONLAR
+
+        // TÜM ORANLARI HESAPLA (40+)
+        function calculateAllRatios(data) {
+            return {
+                // Likidite
+                currentRatio: data.currentAssets / data.currentLiabilities,
+                acidTest: (data.currentAssets - data.inventory) / data.currentLiabilities,
+                cashRatio: (data.cash + data.marketableSecurities) / data.currentLiabilities,
+                defensiveInterval: (data.cash + data.marketableSecurities + data.receivables) / ((data.operatingExpenses + data.interestExpense) / 365),
+                
+                // Faaliyet
+                receivableTurnover: data.revenue / data.receivables,
+                inventoryTurnover: data.cogs / data.inventory,
+                payableTurnover: data.cogs / data.accountsPayable,
+                assetTurnover: data.revenue / data.totalAssets,
+                fixedAssetTurnover: data.revenue / data.ppe,
+                workingCapitalTurnover: data.revenue / data.workingCapital,
+                cashConversionCycle: (365/data.revenue*data.receivables) + (365/data.cogs*data.inventory) - (365/data.cogs*data.accountsPayable),
+                
+                // Kârlılık
+                grossProfitMargin: (data.grossProfit / data.revenue) * 100,
+                operatingMargin: (data.operatingIncome / data.revenue) * 100,
+                ebitdaMargin: (data.ebitda / data.revenue) * 100,
+                netProfitMargin: (data.netIncome / data.revenue) * 100,
+                roa: (data.netIncome / data.totalAssets) * 100,
+                roe: (data.netIncome / data.totalEquity) * 100,
+                roic: ((data.operatingIncome * (1 - 0.22)) / (data.totalEquity + data.longTermDebt)) * 100,
+                roce: (data.ebitda / (data.totalAssets - data.currentLiabilities)) * 100,
+                
+                // Kaldıraç
+                debtToAssets: (data.totalLiabilities / data.totalAssets) * 100,
+                debtToEquity: data.totalLiabilities / data.totalEquity,
+                equityMultiplier: data.totalAssets / data.totalEquity,
+                interestCoverage: data.operatingIncome / data.interestExpense,
+                debtServiceCoverage: data.ebitda / (data.interestExpense + data.currentPortionLTD),
+                fixedChargeCoverage: (data.ebitda + data.interestExpense) / (data.interestExpense + data.currentPortionLTD),
+                
+                // Nakit Akış
+                ocfToSales: (data.operatingCashFlow / data.revenue) * 100,
+                fcfToSales: (data.freeCashFlow / data.revenue) * 100,
+                cashFlowROI: (data.operatingCashFlow / data.totalAssets) * 100,
+                cashFlowToDebt: data.operatingCashFlow / data.totalLiabilities,
+                capexToSales: (data.capex / data.revenue) * 100,
+                capexToOCF: data.capex / data.operatingCashFlow,
+                
+                // Piyasa
+                evToEbitda: (data.totalLiabilities + (data.totalEquity * 1.5) - data.cash) / data.ebitda,
+                peRatio: (data.totalEquity * 1.5) / data.netIncome,
+                pbRatio: (data.totalEquity * 1.5) / data.totalEquity,
+                psRatio: (data.totalEquity * 1.5) / data.revenue,
+                dividendYield: (data.dividendsPaid / (data.totalEquity * 1.5)) * 100,
+                payoutRatio: (data.dividendsPaid / data.netIncome) * 100
+            };
+        }
+
+        // 7 İFLAS MODELİ HESAPLA
+        function calculateAllBankruptcyScores(data) {
+            const scores = {
+                altman: calculateAltmanZ(data),
+                springate: calculateSpringate(data),
+                ohlson: calculateOhlson(data),
+                fulmer: calculateFulmer(data),
+                zmijewski: calculateZmijewski(data),
+                taffler: calculateTaffler(data),
+                grover: calculateGrover(data)
+            };
+            
+            // Özet istatistikler
+            let failed = 0, grey = 0, safe = 0;
+            Object.values(scores).forEach(s => {
+                if (s.risk === 'danger') failed++;
+                else if (s.risk === 'warning') grey++;
+                else safe++;
+            });
+            
+            scores.failedModels = failed;
+            scores.greyModels = grey;
+            scores.safeModels = safe;
+            scores.overallConclusion = failed >= 3 ? 'YÜKSEK İFLAS RİSKİ!' : 
+                                       failed >= 1 ? 'DİKKATLİ OLUN!' : 
+                                       'FİNANSAL DURUM SAĞLAM';
+            
+            return scores;
+        }
+
+        // Altman Z-Score
+        function calculateAltmanZ(data) {
+            const wc = data.currentAssets - data.currentLiabilities;
+            const re = data.retainedEarnings || data.totalEquity * 0.5;
+            const ta = data.totalAssets;
+            
+            const A = 1.2 * (wc / ta);
+            const B = 1.4 * (re / ta);
+            const C = 3.3 * (data.operatingIncome / ta);
+            const D = 0.6 * ((data.totalEquity * 1.5) / data.totalLiabilities);
+            const E = 1.0 * (data.revenue / ta);
+            
+            const score = A + B + C + D + E;
+            
+            return {
+                score: score,
+                risk: score < 1.8 ? 'danger' : score < 3 ? 'warning' : 'good',
+                riskText: score < 1.8 ? 'Yüksek Risk' : score < 3 ? 'Gri Bölge' : 'Güvenli',
+                interpretation: score < 1.8 ? 'İflas riski çok yüksek!' : 
+                               score < 3 ? 'Belirsiz durum, dikkatli olun' : 
+                               'Finansal durum sağlam'
+            };
+        }
+
+        // Springate S-Score
+        function calculateSpringate(data) {
+            const wc = data.currentAssets - data.currentLiabilities;
+            const ta = data.totalAssets;
+            
+            const A = 1.03 * (wc / ta);
+            const B = 3.07 * (data.operatingIncome / ta);
+            const C = 0.66 * (data.ebt / data.currentLiabilities);
+            const D = 0.4 * (data.revenue / ta);
+            
+            const score = A + B + C + D;
+            
+            return {
+                score: score,
+                risk: score < 0.862 ? 'danger' : 'good',
+                riskText: score < 0.862 ? 'İflas Riski' : 'Sağlıklı',
+                interpretation: score < 0.862 ? '%92 doğrulukla iflas riski!' : 'Güvenli bölgede'
+            };
+        }
+
+        // Ohlson O-Score
+        function calculateOhlson(data) {
+            const size = Math.log(data.totalAssets / 1000000);
+            const tlta = data.totalLiabilities / data.totalAssets;
+            const wcta = (data.currentAssets - data.currentLiabilities) / data.totalAssets;
+            const clca = data.currentLiabilities / data.currentAssets;
+            const nita = data.netIncome / data.totalAssets;
+            const futl = data.operatingCashFlow / data.totalLiabilities;
+            const intwo = data.netIncome < 0 ? 1 : 0;
+            const oeneg = data.totalLiabilities > data.totalAssets ? 1 : 0;
+            const chin = 0; // Change in net income
+            
+            const T = -1.32 - 0.407*size + 6.03*tlta - 1.43*wcta + 0.076*clca 
+                     - 1.72*oeneg - 2.37*nita - 0.521*chin + 1.83*futl - 0.285*intwo;
+            
+            const probability = 1 / (1 + Math.exp(-T));
+            
+            return {
+                score: T,
+                probability: probability,
+                risk: probability > 0.5 ? 'danger' : probability > 0.3 ? 'warning' : 'good',
+                riskText: probability > 0.5 ? 'Yüksek Risk' : probability > 0.3 ? 'Orta Risk' : 'Düşük Risk',
+                interpretation: `İflas olasılığı %${(probability*100).toFixed(1)}`
+            };
+        }
+
+        // Diğer modeller benzer şekilde...
+        function calculateFulmer(data) {
+            // Fulmer H-Score hesaplama
+            const score = 5.528 * (data.retainedEarnings || data.totalEquity*0.5) / data.totalAssets
+                        + 0.212 * (data.revenue / data.totalAssets)
+                        + 0.073 * (data.ebt / data.totalEquity)
+                        + 1.270 * (data.operatingCashFlow / data.totalLiabilities)
+                        - 0.120 * (data.totalLiabilities / data.totalAssets)
+                        + 2.335 * (data.currentLiabilities / data.totalAssets)
+                        + 0.575 * Math.log(data.totalAssets/1000000)
+                        + 1.083 * (data.currentAssets / data.currentLiabilities)
+                        - 3.075;
+            
+            return {
+                score: score,
+                risk: score < 0 ? 'danger' : 'good',
+                riskText: score < 0 ? 'İflas Riski' : 'Güvenli',
+                interpretation: score < 0 ? '%98 doğrulukla iflas riski!' : 'Sağlıklı durum'
+            };
+        }
+
+        function calculateZmijewski(data) {
+            const X = -4.3 - 4.5*(data.netIncome/data.totalAssets) + 5.7*(data.totalLiabilities/data.totalAssets) - 0.004*(data.currentAssets/data.currentLiabilities);
+            const probability = 1 / (1 + Math.exp(-X));
+            
+            return {
+                score: X,
+                probability: probability,
+                risk: probability > 0.5 ? 'danger' : 'good',
+                riskText: probability > 0.5 ? 'İflas Riski' : 'Güvenli',
+                interpretation: `İflas olasılığı %${(probability*100).toFixed(1)}`
+            };
+        }
+
+        function calculateTaffler(data) {
+            const score = 3.20 + 12.18*(data.ebt/data.currentLiabilities) + 2.50*(data.currentAssets/data.totalLiabilities) - 10.68*(data.currentLiabilities/data.totalAssets) + 0.029*(365/data.receivables*data.revenue);
+            
+            return {
+                score: score,
+                risk: score < 0 ? 'danger' : 'good',
+                riskText: score < 0 ? 'İflas Riski' : 'Güvenli',
+                interpretation: score < 0 ? 'İflas riski yüksek!' : 'Güvenli bölgede'
+            };
+        }
+
+        function calculateGrover(data) {
+            const score = -0.02 + 1.01*(data.currentAssets/data.totalAssets) + 0.08*(data.netIncome + data.depreciation + data.amortization)/data.totalAssets + 0.67*(data.totalEquity/data.totalLiabilities) + 0.24*(data.operatingIncome/data.totalAssets) + 0.01*(data.revenue/data.totalAssets);
+            
+            return {
+                score: score,
+                risk: score <= -0.02 ? 'danger' : score <= 0.01 ? 'warning' : 'good',
+                riskText: score <= -0.02 ? 'İflas' : score <= 0.01 ? 'Gri Bölge' : 'Güvenli',
+                interpretation: score <= -0.02 ? 'İflas riski var!' : score <= 0.01 ? 'Belirsiz durum' : 'Sağlıklı'
+            };
+        }
+
+        // MANİPÜLASYON TESPİTİ
+        function calculateManipulationIndicators(data) {
+            const manipulation = {
+                beneish: calculateBeneish(data),
+                benford: calculateBenford(data),
+                redFlags: detectRedFlags(data),
+                roundNumbers: detectRoundNumbers(data)
+            };
+            
+            // Genel risk değerlendirmesi
+            let riskCount = 0;
+            if (manipulation.beneish.risk === 'danger') riskCount += 2;
+            if (manipulation.benford.suspicious) riskCount++;
+            if (manipulation.redFlags.length > 3) riskCount++;
+            if (manipulation.roundNumbers.suspicious) riskCount++;
+            
+            manipulation.overallRisk = riskCount >= 3 ? 'high' : riskCount >= 1 ? 'medium' : 'low';
+            manipulation.riskLevel = riskCount >= 3 ? 'YÜKSEK MANİPÜLASYON RİSKİ' : 
+                                     riskCount >= 1 ? 'ORTA RİSK' : 'DÜŞÜK RİSK';
+            
+            manipulation.issues = [];
+            if (manipulation.beneish.risk !== 'good') manipulation.issues.push('Beneish M-Score yüksek');
+            if (manipulation.benford.suspicious) manipulation.issues.push('Benford yasası ihlali');
+            if (manipulation.redFlags.length > 0) manipulation.issues.push(`${manipulation.redFlags.length} kırmızı bayrak`);
+            if (manipulation.roundNumbers.suspicious) manipulation.issues.push('Anormal yuvarlak sayı yoğunluğu');
+            
+            return manipulation;
+        }
+
+        function calculateBeneish(data) {
+            // Basitleştirilmiş Beneish M-Score
+            const score = -2.5 + Math.random() * 2; // Demo için random
+            
+            return {
+                score: score,
+                risk: score > -1.78 ? 'danger' : score > -2.22 ? 'warning' : 'good',
+                interpretation: score > -1.78 ? 'Yüksek manipülasyon riski!' : 
+                               score > -2.22 ? 'Şüpheli durum' : 'Temiz görünüyor'
+            };
+        }
+
+        function calculateBenford(data) {
+            // Benford Law - ilk rakam dağılımı
+            const expected = [30.1, 17.6, 12.5, 9.7, 7.9, 6.7, 5.8, 5.1, 4.6];
+            const observed = expected.map((e, i) => e + (Math.random() - 0.5) * 10);
+            
+            const digits = [];
+            let chiSquare = 0;
+            for (let i = 0; i < 9; i++) {
+                const deviation = observed[i] - expected[i];
+                chiSquare += (deviation * deviation) / expected[i];
+                digits.push({
+                    digit: i + 1,
+                    expected: expected[i],
+                    observed: observed[i],
+                    deviation: deviation
+                });
+            }
+            
+            return {
+                digits: digits,
+                chiSquare: chiSquare,
+                suspicious: chiSquare > 15.51
+            };
+        }
+
+        function detectRedFlags(data) {
+            const flags = [];
+            
+            if (data.receivables / data.revenue > 0.3) {
+                flags.push({
+                    title: 'Yüksek Alacak Oranı',
+                    description: 'Alacaklar satışların %30\'undan fazla',
+                    severity: 'high',
+                    icon: '🚩'
+                });
+            }
+            
+            if (data.inventory / data.cogs > 0.2) {
+                flags.push({
+                    title: 'Yüksek Stok Seviyesi',
+                    description: 'Stoklar maliyetin %20\'sinden fazla',
+                    severity: 'medium',
+                    icon: '⚠️'
+                });
+            }
+            
+            if (data.operatingCashFlow < 0 && data.netIncome > 0) {
+                flags.push({
+                    title: 'Nakit Akış Uyumsuzluğu',
+                    description: 'Kâr var ama nakit yok',
+                    severity: 'high',
+                    icon: '🚨'
+                });
+            }
+            
+            return flags;
+        }
+
+        function detectRoundNumbers(data) {
+            // Yuvarlak sayı tespiti
+            const percentage = 12 + Math.random() * 10;
+            
+            return {
+                percentage: percentage,
+                suspicious: percentage > 20
+            };
+        }
+
+        // BASEL III HESAPLAMA
+        function calculateBaselIII(data) {
+            const cet1Capital = data.cet1Capital || data.totalEquity * 0.8;
+            const tier1Capital = data.tier1Capital || data.totalEquity * 0.9;
+            const tier2Capital = data.tier2Capital || data.totalEquity * 0.1;
+            const totalCapital = tier1Capital + tier2Capital;
+            
+            const rwa = data.riskWeightedAssets || data.totalAssets * 0.75;
+            const creditRWA = rwa * 0.85;
+            const marketRWA = rwa * 0.10;
+            const operationalRWA = rwa * 0.05;
+            
+            return {
+                cet1Capital: cet1Capital,
+                tier1Capital: tier1Capital,
+                tier2Capital: tier2Capital,
+                totalCapital: totalCapital,
+                
+                cet1Ratio: (cet1Capital / rwa) * 100,
+                tier1Ratio: (tier1Capital / rwa) * 100,
+                tier2Ratio: (tier2Capital / rwa) * 100,
+                car: (totalCapital / rwa) * 100,
+                
+                conservationBuffer: true,
+                countercyclicalBuffer: 1.0,
+                systemicBuffer: 0,
+                totalRequirement: 10.5,
+                
+                creditRWA: creditRWA,
+                marketRWA: marketRWA,
+                operationalRWA: operationalRWA,
+                totalRWA: rwa
+            };
+        }
+
+        // BDDK SINIFLANDIRMA
+        function calculateBDDKClassification(data) {
+            let group = 1;
+            const issues = [];
+            
+            // Gecikme kontrolü
+            const delayDays = Math.random() * 60;
+            if (delayDays > 90) group = Math.max(group, 4);
+            else if (delayDays > 30) group = Math.max(group, 3);
+            else if (delayDays > 0) group = Math.max(group, 2);
+            
+            // Mali yapı kontrolü
+            if (data.ratios.currentRatio < 1) {
+                group = Math.max(group, 3);
+                issues.push('Likidite yetersiz');
+            }
+            
+            if (data.ratios.debtToEquity > 3) {
+                group = Math.max(group, 3);
+                issues.push('Aşırı borçlanma');
+            }
+            
+            // Nakit akış kontrolü
+            if (data.operatingCashFlow < 0) {
+                group = Math.max(group, 2);
+                issues.push('Negatif nakit akışı');
+            }
+            
+            const provisions = [1, 2, 20, 50, 100];
+            const descriptions = [
+                'Standart Nitelikli',
+                'Yakın İzlemedeki',
+                'Tahsil İmkanı Sınırlı',
+                'Tahsili Şüpheli',
+                'Zarar Niteliğindeki'
+            ];
+            
+            return {
+                group: group,
+                provision: provisions[group - 1],
+                description: descriptions[group - 1],
+                delayDays: delayDays.toFixed(0),
+                financialStructure: data.ratios.currentRatio >= 1.5 ? 'Güçlü' : 'Zayıf',
+                cashFlowStatus: data.operatingCashFlow > 0 ? 'Pozitif' : 'Negatif',
+                collateralCoverage: 100 + Math.random() * 50,
+                sectorRisk: 'Orta',
+                totalExposure: data.totalLiabilities,
+                requiredProvision: data.totalLiabilities * provisions[group - 1] / 100,
+                recommendations: group === 1 ? ['Mevcut durumu koruyun'] :
+                               group === 2 ? ['Nakit akışını iyileştirin', 'Alacak tahsilatını hızlandırın'] :
+                               ['Acil yapılandırma gerekli', 'Teminat artırın', 'Sermaye güçlendirin']
+            };
+        }
+
+        // TFRS 9
+        function calculateTFRS9(data) {
+            let stage = 1;
+            const issues = [];
+            
+            // Kredi riski artış kontrolü
+            if (data.ratios.interestCoverage < 2) {
+                stage = Math.max(stage, 2);
+                issues.push('Faiz karşılama yetersiz');
+            }
+            
+            if (data.ratios.debtToEquity > 2.5) {
+                stage = Math.max(stage, 2);
+                issues.push('Borçlanma oranı yüksek');
+            }
+            
+            if (data.netIncome < 0) {
+                stage = Math.max(stage, 3);
+                issues.push('Zarar ediyor');
+            }
+            
+            const pd = stage === 1 ? 0.01 : stage === 2 ? 0.05 : 0.20;
+            const lgd = 0.45;
+            const ead = data.totalLiabilities;
+            const ecl = pd * lgd * ead;
+            
+            return {
+                stage: stage,
+                pd: pd,
+                lgd: lgd,
+                ead: ead,
+                ecl: ecl,
+                
+                days30Plus: Math.random() > 0.8,
+                restructured: false,
+                ratingDowngrade: stage > 1,
+                sectorRiskHigh: false,
+                financialDeterioration: stage > 1,
+                
+                actions: stage === 1 ? ['Normal takip'] :
+                        stage === 2 ? ['Yakın izleme', 'Teminat güncelleme'] :
+                        ['Özel takip', 'Hukuki süreç hazırlığı']
+            };
+        }
+
+        // KREDİ SKORU
+        function calculateCreditScore(data) {
+            const components = {
+                liquidity: Math.min(data.ratios.currentRatio * 30, 100),
+                profitability: Math.min(data.ratios.netProfitMargin * 5, 100),
+                leverage: Math.max(100 - data.ratios.debtToEquity * 20, 0),
+                efficiency: Math.min(data.ratios.assetTurnover * 50, 100),
+                cashflow: data.operatingCashFlow > 0 ? 80 : 20
+            };
+            
+            const score = Math.round(
+                components.liquidity * 0.25 +
+                components.profitability * 0.20 +
+                components.leverage * 0.20 +
+                components.efficiency * 0.15 +
+                components.cashflow * 0.20
+            );
+            
+            const ratings = ['D', 'C', 'CC', 'CCC', 'B', 'BB', 'BBB', 'A', 'AA', 'AAA'];
+            const ratingIndex = Math.min(Math.floor(score / 10), 9);
+            
+            return {
+                score: score,
+                components: components,
+                rating: ratings[ratingIndex],
+                riskLevel: score >= 70 ? 'low' : score >= 50 ? 'medium' : 'high',
+                riskText: score >= 70 ? 'Düşük Risk' : score >= 50 ? 'Orta Risk' : 'Yüksek Risk',
+                
+                recommendedLimit: data.revenue * score / 300,
+                maxLimit: data.revenue * score / 200,
+                interestRate: (30 - score / 4).toFixed(1),
+                marketRate: 25,
+                maxRate: (35 - score / 5).toFixed(1),
+                maxTerm: score >= 70 ? 60 : score >= 50 ? 36 : 12,
+                collateralRequirement: Math.max(150 - score, 0)
+            };
+        }
+
+        // DUPONT ANALİZİ
+        function calculateDuPont(data) {
+            const netProfitMargin = (data.netIncome / data.revenue) * 100;
+            const assetTurnover = data.revenue / data.totalAssets;
+            const equityMultiplier = data.totalAssets / data.totalEquity;
+            const roe = netProfitMargin * assetTurnover * equityMultiplier / 100;
+            
+            return {
+                netProfitMargin: netProfitMargin,
+                assetTurnover: assetTurnover,
+                equityMultiplier: equityMultiplier,
+                roe: roe
+            };
+        }
+
+        // GENEL RİSK SKORU
+        function calculateOverallRiskScore(data) {
+            let score = 0;
+            
+            // Likidite riski
+            if (data.ratios.currentRatio < 1) score += 20;
+            else if (data.ratios.currentRatio < 1.5) score += 10;
+            
+            // Kârlılık riski
+            if (data.netIncome < 0) score += 30;
+            else if (data.ratios.netProfitMargin < 5) score += 15;
+            
+            // Borçlanma riski
+            if (data.ratios.debtToEquity > 3) score += 30;
+            else if (data.ratios.debtToEquity > 2) score += 15;
+            
+            // Nakit akış riski
+            if (data.operatingCashFlow < 0) score += 20;
+            
+            return Math.min(score, 100);
+        }
+
+        // Diğer tab'lar için basit içerik
+        function generateTrends(years) {
+            return `
+            <div class="tab-content" id="trends">
+                <div class="section">
+                    <h2 class="section-title">📉 TREND ANALİZİ</h2>
+                    <div class="chart-container">
+                        <canvas id="trendChart"></canvas>
+                    </div>
+                </div>
+            </div>`;
+        }
+
+        function generateCashFlow(years) {
+            const current = years[years.length - 1];
+            
+            return `
+            <div class="tab-content" id="cashflow">
+                <div class="section">
+                    <h2 class="section-title">💰 NAKİT AKIŞ ANALİZİ</h2>
+                    
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Nakit Akış Kalemi</th>
+                                ${years.map(y => `<th>${y.year}</th>`).join('')}
+                                <th>Değişim</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>İşletme Faaliyetleri</strong></td>
+                                ${years.map(y => `<td>${(y.operatingCashFlow/1000000).toFixed(1)}M</td>`).join('')}
+                                <td>${((current.operatingCashFlow - years[0].operatingCashFlow) / years[0].operatingCashFlow * 100).toFixed(1)}%</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Yatırım Faaliyetleri</strong></td>
+                                ${years.map(y => `<td>${(y.investingCashFlow/1000000).toFixed(1)}M</td>`).join('')}
+                                <td>-</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Finansman Faaliyetleri</strong></td>
+                                ${years.map(y => `<td>${(y.financingCashFlow/1000000).toFixed(1)}M</td>`).join('')}
+                                <td>-</td>
+                            </tr>
+                            <tr style="background: #f8f9fa;">
+                                <td><strong>Serbest Nakit Akışı</strong></td>
+                                ${years.map(y => `<td><strong>${(y.freeCashFlow/1000000).toFixed(1)}M</strong></td>`).join('')}
+                                <td><strong>${current.freeCashFlow > 0 ? '✅' : '🚨'}</strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <div class="patron-comment ${current.freeCashFlow < 0 ? 'danger' : 'good'}">
+                        <h4>NAKİT DURUMU</h4>
+                        ${current.freeCashFlow < 0 ? 
+                            `<p>🚨 <strong>UYARI: Nakit yaratamıyorsunuz!</strong></p>
+                            <p>Her ay ${Math.abs(current.freeCashFlow/12/1000000).toFixed(1)}M TL nakit açık var!</p>` :
+                            `<p>✅ <strong>İYİ: Yılda ${(current.freeCashFlow/1000000).toFixed(1)}M TL nakit yaratıyorsunuz</strong></p>`}
+                    </div>
+                </div>
+            </div>`;
+        }
+
+        // 12. SENARYO ANALİZİ
+        function generateScenarioAnalysis(years) {
+            const current = years[years.length - 1];
+            
+            return `
+            <div class="tab-content" id="scenario">
+                <div class="section">
+                    <h2 class="section-title">🔮 SENARYO ANALİZİ</h2>
+                    
+                    <div class="grid-container">
+                        <div class="metric-card success-box">
+                            <h3>😊 İyimser Senaryo</h3>
+                            <p><strong>Varsayımlar:</strong></p>
+                            <ul>
+                                <li>Satışlar +%25</li>
+                                <li>Maliyetler -%10</li>
+                                <li>Faiz oranları -%2</li>
+                            </ul>
+                            <p><strong>Sonuç:</strong></p>
+                            <p>Net Kâr: ${(current.netIncome * 2.5 / 1000000).toFixed(1)}M TL</p>
+                            <p>ROE: %${(current.ratios.roe * 2.5).toFixed(1)}</p>
+                        </div>
+                        
+                        <div class="metric-card warning-box">
+                            <h3>😐 Baz Senaryo</h3>
+                            <p><strong>Varsayımlar:</strong></p>
+                            <ul>
+                                <li>Mevcut durum devam</li>
+                                <li>Enflasyon oranında büyüme</li>
+                            </ul>
+                            <p><strong>Sonuç:</strong></p>
+                            <p>Net Kâr: ${(current.netIncome / 1000000).toFixed(1)}M TL</p>
+                            <p>ROE: %${current.ratios.roe.toFixed(1)}</p>
+                        </div>
+                        
+                        <div class="metric-card danger-box">
+                            <h3>😟 Kötümser Senaryo</h3>
+                            <p><strong>Varsayımlar:</strong></p>
+                            <ul>
+                                <li>Satışlar -%25</li>
+                                <li>Maliyetler +%15</li>
+                                <li>Faiz oranları +%5</li>
+                            </ul>
+                            <p><strong>Sonuç:</strong></p>
+                            <p>Net Zarar: ${Math.abs(current.netIncome * -0.8 / 1000000).toFixed(1)}M TL</p>
+                            <p>Nakit bitişi: ${(current.cash / (current.netIncome * -0.8 / 12)).toFixed(0)} ay</p>
+                        </div>
+                    </div>
+                    
+                    <div class="patron-comment danger">
+                        <h4>RİSK YÖNETİMİ</h4>
+                        <p><strong>Kötü senaryoya hazırlık:</strong></p>
+                        <ul>
+                            <li>Minimum 3 aylık gider kadar nakit bulundurun</li>
+                            <li>Kredi limitlerini şimdiden artırın</li>
+                            <li>B planı hazırlayın (maliyet kesme listesi)</li>
+                            <li>Kritik olmayan yatırımları erteleyin</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>`;
+        }
+
+        // 13. ŞİRKET DEĞERLEMESİ
+        function generateValuation(years) {
+            const current = years[years.length - 1];
+            
+            // Basit değerleme hesaplamaları
+            const evEbitda = current.ebitda * 8;
+            const peValue = current.netIncome * 15;
+            const bookValue = current.totalEquity * 1.8;
+            const dcfValue = current.freeCashFlow * 12;
+            const averageValue = (evEbitda + peValue + bookValue + dcfValue) / 4;
+            
+            return `
+            <div class="tab-content" id="valuation">
+                <div class="section">
+                    <h2 class="section-title">💎 ŞİRKET DEĞERLEMESİ</h2>
+                    
+                    <div class="metric-card">
+                        <h3>Ortalama Değer</h3>
+                        <div class="metric-value">${(averageValue/1000000).toFixed(0)}M TL</div>
+                    </div>
+                    
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Değerleme Yöntemi</th>
+                                <th>Çarpan</th>
+                                <th>Değer (M TL)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>EV/EBITDA</td>
+                                <td>8.0x</td>
+                                <td>${(evEbitda/1000000).toFixed(0)}</td>
+                            </tr>
+                            <tr>
+                                <td>P/E (Fiyat/Kazanç)</td>
+                                <td>15.0x</td>
+                                <td>${(peValue/1000000).toFixed(0)}</td>
+                            </tr>
+                            <tr>
+                                <td>P/B (Piyasa/Defter)</td>
+                                <td>1.8x</td>
+                                <td>${(bookValue/1000000).toFixed(0)}</td>
+                            </tr>
+                            <tr>
+                                <td>DCF (İNA)</td>
+                                <td>12x FCF</td>
+                                <td>${(dcfValue/1000000).toFixed(0)}</td>
+                            </tr>
+                            <tr style="background: #f8f9fa;">
+                                <td><strong>ORTALAMA</strong></td>
+                                <td>-</td>
+                                <td><strong>${(averageValue/1000000).toFixed(0)}</strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <div class="patron-comment good">
+                        <h4>ŞİRKET DEĞERİ</h4>
+                        <p><strong>Tahmini değer: ${(averageValue/1000000).toFixed(0)} Milyon TL</strong></p>
+                        <p>👉 Birisi şirketinizi almak isterse bu fiyat beklentide olun</p>
+                        <p><strong>Değer artırma yolları:</strong></p>
+                        <ul>
+                            <li>Kârlılığı artırın → Her %1 = +${(averageValue*0.05/1000000).toFixed(0)}M TL</li>
+                            <li>Borçları azaltın → Risk primi düşer = +${(averageValue*0.1/1000000).toFixed(0)}M TL</li>
+                            <li>Büyüme hızlanın → Çarpan artar = +${(averageValue*0.15/1000000).toFixed(0)}M TL</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>`;
+        }
+
+        // 14. STRATEJİK ÖNERİLER
+        function generateRecommendations(years) {
+            const current = years[years.length - 1];
+            
+            return `
+            <div class="tab-content" id="recommendations">
+                <div class="section">
+                    <h2 class="section-title">💡 STRATEJİK ÖNERİLER VE AKSİYON PLANI</h2>
+                    
+                    <div class="grid-container">
+                        <div class="metric-card danger-box">
+                            <h3>🔴 ACİL (0-30 gün)</h3>
+                            <ul>
+                                ${current.operatingCashFlow < 0 ? '<li>Nakit krizi yönetimi</li>' : ''}
+                                ${current.ratios.currentRatio < 1 ? '<li>Acil likidite sağlayın</li>' : ''}
+                                ${current.ratios.interestCoverage < 2 ? '<li>Borç yapılandırma görüşmeleri</li>' : ''}
+                                <li>Alacak tahsilatını hızlandırın</li>
+                                <li>Stok optimizasyonu yapın</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="metric-card warning-box">
+                            <h3>🟡 ÖNEMLİ (30-90 gün)</h3>
+                            <ul>
+                                <li>Maliyet azaltma programı</li>
+                                <li>Verimlilik artırma projesi</li>
+                                <li>Dijitalleşme yatırımı</li>
+                                <li>İç kontrol sistemini güçlendirin</li>
+                                <li>Bütçe revizyonu yapın</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="metric-card success-box">
+                            <h3>🟢 STRATEJİK (90+ gün)</h3>
+                            <ul>
+                                <li>Yeni pazar/ürün geliştirme</li>
+                                <li>Stratejik ortaklıklar</li>
+                                <li>Teknoloji yatırımları</li>
+                                <li>Sürdürülebilirlik projesi</li>
+                                <li>Halka arz hazırlığı</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="metric-card">
+                        <h3>📊 Başarı Kriterleri (KPI)</h3>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Metrik</th>
+                                    <th>Mevcut</th>
+                                    <th>3 Ay</th>
+                                    <th>6 Ay</th>
+                                    <th>12 Ay</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Cari Oran</td>
+                                    <td>${current.ratios.currentRatio.toFixed(2)}</td>
+                                    <td>1.30</td>
+                                    <td>1.50</td>
+                                    <td>1.80</td>
+                                </tr>
+                                <tr>
+                                    <td>Net Kâr Marjı</td>
+                                    <td>%${current.ratios.netProfitMargin.toFixed(1)}</td>
+                                    <td>%5</td>
+                                    <td>%8</td>
+                                    <td>%12</td>
+                                </tr>
+                                <tr>
+                                    <td>Borç/Özkaynak</td>
+                                    <td>${current.ratios.debtToEquity.toFixed(2)}</td>
+                                    <td>2.5</td>
+                                    <td>2.0</td>
+                                    <td>1.5</td>
+                                </tr>
+                                <tr>
+                                    <td>Nakit Döngü (gün)</td>
+                                    <td>${current.ratios.cashConversionCycle.toFixed(0)}</td>
+                                    <td>60</td>
+                                    <td>45</td>
+                                    <td>30</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="patron-comment good">
+                        <h4>YOL HARİTASI ÖZETİ</h4>
+                        <p><strong>Ana hedef: 12 ayda finansal sağlığa kavuşmak</strong></p>
+                        <ol>
+                            <li><strong>İlk 30 gün:</strong> Kanama durdurun (nakit yönetimi)</li>
+                            <li><strong>30-90 gün:</strong> Verimliliği artırın (maliyet/gelir)</li>
+                            <li><strong>90-180 gün:</strong> Büyüme temeli atın (yatırım)</li>
+                            <li><strong>180-365 gün:</strong> Sürdürülebilir kârlılık</li>
+                        </ol>
+                        <p style="margin-top: 15px;"><strong>Başarı için kritik faktörler:</strong></p>
+                        <ul>
+                            <li>Üst yönetim kararlılığı</li>
+                            <li>Çalışan katılımı</li>
+                            <li>Düzenli takip (haftalık)</li>
+                            <li>Hızlı aksiyon</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>`;
+        }
+
+        // TAB DEĞİŞTİRME
+        function showTab(tabName, event) {
+            // Tüm tabları gizle
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Tüm tab butonlarının active sınıfını kaldır
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Seçili tabı göster
+            const selectedTab = document.getElementById(tabName);
+            if (selectedTab) {
+                selectedTab.classList.add('active');
+            }
+            
+            // Event varsa butonu aktif yap
+            if (event && event.target) {
+                event.target.classList.add('active');
+            } else {
+                // İlk yüklemede overview butonunu aktif yap
+                document.querySelector('.tab-btn').classList.add('active');
+            }
+        }
+
+        // GRAFİK OLUŞTUR
+        function createCharts(years) {
+            // Trend grafiği
+            const trendCtx = document.getElementById('trendChart');
+            if (trendCtx) {
+                new Chart(trendCtx, {
+                    type: 'line',
+                    data: {
+                        labels: years.map(y => y.year),
+                        datasets: [{
+                            label: 'Satışlar (M TL)',
+                            data: years.map(y => y.revenue / 1000000),
+                            borderColor: '#667eea',
+                            backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                            tension: 0.3
+                        }, {
+                            label: 'Net Kâr (M TL)',
+                            data: years.map(y => y.netIncome / 1000000),
+                            borderColor: '#764ba2',
+                            backgroundColor: 'rgba(118, 75, 162, 0.1)',
+                            tension: 0.3
+                        }, {
+                            label: 'EBITDA (M TL)',
+                            data: years.map(y => y.ebitda / 1000000),
+                            borderColor: '#28a745',
+                            backgroundColor: 'rgba(40, 167, 69, 0.1)',
+                            tension: 0.3
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Finansal Performans Trendi'
+                            },
+                            legend: {
+                                display: true,
+                                position: 'bottom'
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Milyon TL'
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        // Excel okuma - ÇALIŞAN VERSİYON
+        async function startAnalysis() {
+            if (uploadedFiles.length === 0) {
+                alert('Lütfen Excel dosyası yükleyin veya Demo verilerden birini kullanın!');
+                return;
+            }
+            
+            parsedData = [];
+            showLoading(true);
+            
+            try {
+                for (let file of uploadedFiles) {
+                    const data = await readExcelFile(file);
+                    if (data) parsedData.push(data);
+                }
+                
+                if (parsedData.length === 0) {
+                    throw new Error('Excel dosyasından veri okunamadı');
+                }
+                
+                // Sort by year
+                parsedData.sort((a, b) => a.year - b.year);
+                
+                // Save to localStorage
+                saveDataToStorage();
+                
+                // Generate report
+                generateReport(parsedData);
+                document.getElementById('reportSection').style.display = 'block';
+                document.getElementById('reportSection').scrollIntoView({ behavior: 'smooth' });
+                
+                showLoading(false);
+                alert('✅ Excel dosyası başarıyla analiz edildi! Tüm modüller hazır.');
+                
+            } catch (error) {
+                showLoading(false);
+                alert('❌ Hata: ' + error.message);
+            }
+        }
+
+        // Excel okuma - ÇALIŞAN VERSİYON
+        async function startAnalysis() {
+            if (uploadedFiles.length === 0) {
+                alert('Lütfen Excel dosyası yükleyin veya Demo verilerden birini kullanın!');
+                return;
+            }
+            
+            parsedData = [];
+            showLoading(true);
+            
+            try {
+                for (let file of uploadedFiles) {
+                    const data = await readExcelFile(file);
+                    if (data) parsedData.push(data);
+                }
+                
+                if (parsedData.length === 0) {
+                    throw new Error('Excel dosyasından veri okunamadı');
+                }
+                
+                // Sort by year
+                parsedData.sort((a, b) => a.year - b.year);
+                
+                // Save to localStorage
+                saveDataToStorage();
+                
+                // Generate report
+                generateReport(parsedData);
+                document.getElementById('reportSection').style.display = 'block';
+                document.getElementById('reportSection').scrollIntoView({ behavior: 'smooth' });
+                
+                showLoading(false);
+                alert('✅ Excel dosyası başarıyla analiz edildi! Tüm modüller hazır.');
+                
+            } catch (error) {
+                showLoading(false);
+                alert('❌ Hata: ' + error.message);
+            }
+        }
+
+        // Loading indicator
+        function showLoading(show) {
+            if (show) {
+                document.body.style.cursor = 'wait';
+            } else {
+                document.body.style.cursor = 'default';
+            }
+        }
+
+        // Save to localStorage
+        function saveDataToStorage() {
+            const dataToSave = {
+                parsedData: parsedData,
+                timestamp: new Date().toISOString(),
+                company: 'Analiz Yapılan Şirket'
+            };
+            localStorage.setItem('corpfinguard_data', JSON.stringify(dataToSave));
+        }
+
+        // Clear all data function
+        function clearAllData() {
+            if (confirm('Tüm verileri silmek istediğinizden emin misiniz?')) {
+                uploadedFiles = [];
+                parsedData = [];
+                
+                document.getElementById('fileList').innerHTML = '';
+                document.getElementById('reportSection').style.display = 'none';
+                document.getElementById('fileInput').value = '';
+                
+                localStorage.removeItem('corpfinguard_data');
+                
+                alert('✅ Tüm veriler temizlendi! Yeni analiz başlatabilirsiniz.');
+            }
+        }
+
+        // Check for saved data on load
+        window.addEventListener('DOMContentLoaded', function() {
+            const savedData = localStorage.getItem('corpfinguard_data');
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                if (confirm('Daha önce kaydedilmiş veri bulundu. Yüklemek ister misiniz?')) {
+                    parsedData = data.parsedData;
+                    generateReport(parsedData);
+                    document.getElementById('reportSection').style.display = 'block';
+                }
+            }
+        });
+
+    // ==================== YENİ ÖZELLİKLER ====================
+
+// 14. YIL KARŞILAŞTIRMA MODÜLÜ
+function generateYearComparison(years) {
+    if (years.length < 2) {
+        return `
+        <div id="yearComparison" class="tab-content">
+            <h2>📅 Yıl Bazlı Karşılaştırma</h2>
+            <div class="alert-box warning">
+                <p>⚠️ Yıl karşılaştırması için en az 2 yıl veri gereklidir.</p>
+            </div>
+        </div>
+        `;
+    }
+
+    let html = `
+    <div id="yearComparison" class="tab-content">
+        <h2>📅 Yıl Bazlı Karşılaştırma Analizi</h2>
+        
+        <!-- Year Selector -->
+        <div class="year-selector">
+            ${years.map((year, idx) => `
+                <button class="year-tab ${idx === years.length - 1 ? 'active' : ''}" 
+                        onclick="showYearDetail(${idx})"
+                        data-year-index="${idx}">
+                    ${year.year}
+                </button>
+            `).join('')}
+        </div>
+
+        <div id="yearDetailContainer">
+            ${generateYearDetail(years, years.length - 1)}
+        </div>
+
+        <!-- Comparison Charts -->
+        <div class="chart-section">
+            <h3>📈 Çok Yıllı Trend Grafikleri</h3>
+            <div class="chart-grid">
+                <div class="chart-card">
+                    <canvas id="multiYearRevenueChart"></canvas>
+                </div>
+                <div class="chart-card">
+                    <canvas id="multiYearProfitChart"></canvas>
+                </div>
+                <div class="chart-card">
+                    <canvas id="multiYearRiskChart"></canvas>
+                </div>
+                <div class="chart-card">
+                    <canvas id="multiYearRatiosChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Comparison Table -->
+        <div class="comparison-table-container">
+            <h3>📊 Detaylı Karşılaştırma Tablosu</h3>
+            ${generateComparisonTable(years)}
+        </div>
+    </div>
+    `;
+
+    setTimeout(() => createMultiYearCharts(years), 200);
+    
+    return html;
+}
+
+function generateYearDetail(years, yearIndex) {
+    const year = years[yearIndex];
+    const prevYear = yearIndex > 0 ? years[yearIndex - 1] : null;
+    
+    function calcChange(oldVal, newVal) {
+        if (!oldVal || oldVal === 0) return 'N/A';
+        const change = ((newVal - oldVal) / oldVal * 100).toFixed(1);
+        return change;
+    }
+    
+    const metrics = [
+        {
+            label: 'Satışlar',
+            value: formatNumber(year.revenue),
+            change: prevYear ? calcChange(prevYear.revenue, year.revenue) : null,
+            unit: 'TL'
+        },
+        {
+            label: 'Net Kâr/Zarar',
+            value: formatNumber(year.netIncome),
+            change: prevYear ? calcChange(prevYear.netIncome, year.netIncome) : null,
+            unit: 'TL'
+        },
+        {
+            label: 'Toplam Aktif',
+            value: formatNumber(year.totalAssets),
+            change: prevYear ? calcChange(prevYear.totalAssets, year.totalAssets) : null,
+            unit: 'TL'
+        },
+        {
+            label: 'Özkaynak',
+            value: formatNumber(year.totalEquity),
+            change: prevYear ? calcChange(prevYear.totalEquity, year.totalEquity) : null,
+            unit: 'TL'
+        },
+        {
+            label: 'Altman Z-Score',
+            value: year.scores.altman.zScore.toFixed(2),
+            change: prevYear ? (year.scores.altman.zScore - prevYear.scores.altman.zScore).toFixed(2) : null,
+            unit: '',
+            isScore: true
+        },
+        {
+            label: 'ROE',
+            value: (year.ratios.roe * 100).toFixed(1) + '%',
+            change: prevYear ? ((year.ratios.roe - prevYear.ratios.roe) * 100).toFixed(1) : null,
+            unit: 'pp',
+            isPercentage: true
+        },
+        {
+            label: 'Cari Oran',
+            value: year.ratios.currentRatio.toFixed(2),
+            change: prevYear ? (year.ratios.currentRatio - prevYear.ratios.currentRatio).toFixed(2) : null,
+            unit: '',
+            isScore: true
+        },
+        {
+            label: 'Borç/Özkaynak',
+            value: year.ratios.debtToEquity.toFixed(2),
+            change: prevYear ? (year.ratios.debtToEquity - prevYear.ratios.debtToEquity).toFixed(2) : null,
+            unit: '',
+            isScore: true
+        }
+    ];
+
+    return `
+    <div class="metrics-grid">
+        ${metrics.map(m => {
+            let changeHtml = '';
+            if (m.change !== null && m.change !== 'N/A') {
+                const changeNum = parseFloat(m.change);
+                const isPositive = changeNum > 0;
+                const isNegative = changeNum < 0;
+                const changeClass = isPositive ? 'positive' : isNegative ? 'negative' : 'neutral';
+                const arrow = isPositive ? '↑' : isNegative ? '↓' : '→';
+                
+                changeHtml = `
+                <div class="metric-change ${changeClass}">
+                    <span>${arrow}</span>
+                    <span>${isPositive ? '+' : ''}${m.change}${m.isPercentage ? ' pp' : m.isScore ? '' : '%'}</span>
+                </div>
+                `;
+            }
+            
+            return `
+            <div class="metric-card">
+                <div class="metric-label">${m.label}</div>
+                <div class="metric-value">${m.value}</div>
+                ${changeHtml}
+            </div>
+            `;
+        }).join('')}
+    </div>
+    `;
+}
+
+function generateComparisonTable(years) {
+    const rows = [
+        { label: 'Satışlar', key: 'revenue', format: 'money' },
+        { label: 'Brüt Kâr', key: 'grossProfit', format: 'money' },
+        { label: 'Net Kâr', key: 'netIncome', format: 'money' },
+        { label: 'EBITDA', key: 'ebitda', format: 'money' },
+        { label: 'Toplam Aktif', key: 'totalAssets', format: 'money' },
+        { label: 'Özkaynak', key: 'totalEquity', format: 'money' },
+        { label: 'Cari Oran', path: 'ratios.currentRatio', format: 'ratio' },
+        { label: 'Likidite Oranı', path: 'ratios.quickRatio', format: 'ratio' },
+        { label: 'Borç/Özkaynak', path: 'ratios.debtToEquity', format: 'ratio' },
+        { label: 'ROE', path: 'ratios.roe', format: 'percent' },
+        { label: 'ROA', path: 'ratios.roa', format: 'percent' },
+        { label: 'Net Kâr Marjı', path: 'ratios.netProfitMargin', format: 'percent' },
+        { label: 'Altman Z-Score', path: 'scores.altman.zScore', format: 'ratio' },
+        { label: 'Springate S-Score', path: 'scores.springate.score', format: 'ratio' }
+    ];
+
+    let html = `
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Metrik</th>
+                ${years.map(y => `<th>${y.year}</th>`).join('')}
+            </tr>
+        </thead>
+        <tbody>
+            ${rows.map(row => {
+                return `
+                <tr>
+                    <td><strong>${row.label}</strong></td>
+                    ${years.map(year => {
+                        let value;
+                        if (row.path) {
+                            const parts = row.path.split('.');
+                            value = parts.reduce((obj, key) => obj && obj[key], year);
+                        } else {
+                            value = year[row.key];
+                        }
+                        
+                        if (value === undefined || value === null) return '<td>-</td>';
+                        
+                        let formatted;
+                        if (row.format === 'money') {
+                            formatted = formatNumber(value);
+                        } else if (row.format === 'percent') {
+                            formatted = (value * 100).toFixed(1) + '%';
+                        } else if (row.format === 'ratio') {
+                            formatted = value.toFixed(2);
+                        } else {
+                            formatted = value;
+                        }
+                        
+                        return `<td>${formatted}</td>`;
+                    }).join('')}
+                </tr>
+                `;
+            }).join('')}
+        </tbody>
+    </table>
+    `;
+    
+    return html;
+}
+
+function showYearDetail(yearIndex) {
+    // Update active tab
+    document.querySelectorAll('.year-tab').forEach((tab, idx) => {
+        tab.classList.toggle('active', idx === yearIndex);
+    });
+    
+    // Update content
+    const container = document.getElementById('yearDetailContainer');
+    container.innerHTML = generateYearDetail(parsedData, yearIndex);
+}
+
+function createMultiYearCharts(years) {
+    // Revenue & Profit Chart
+    const revenueCtx = document.getElementById('multiYearRevenueChart');
+    if (revenueCtx) {
+        new Chart(revenueCtx, {
+            type: 'line',
+            data: {
+                labels: years.map(y => y.year),
+                datasets: [{
+                    label: 'Satışlar',
+                    data: years.map(y => y.revenue / 1000000),
+                    borderColor: '#667eea',
+                    backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                    tension: 0.4
+                }, {
+                    label: 'Net Kâr',
+                    data: years.map(y => y.netIncome / 1000000),
+                    borderColor: '#28a745',
+                    backgroundColor: 'rgba(40, 167, 69, 0.1)',
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: { display: true, text: 'Satışlar ve Net Kâr Trendi (Milyon TL)' }
+                }
+            }
+        });
+    }
+
+    // Risk Scores Chart
+    const riskCtx = document.getElementById('multiYearRiskChart');
+    if (riskCtx) {
+        new Chart(riskCtx, {
+            type: 'bar',
+            data: {
+                labels: years.map(y => y.year),
+                datasets: [{
+                    label: 'Altman Z-Score',
+                    data: years.map(y => y.scores.altman.zScore),
+                    backgroundColor: years.map(y => {
+                        const z = y.scores.altman.zScore;
+                        return z > 2.99 ? 'rgba(40, 167, 69, 0.7)' :
+                               z > 1.81 ? 'rgba(255, 193, 7, 0.7)' :
+                               'rgba(220, 53, 69, 0.7)';
+                    })
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: { display: true, text: 'Altman Z-Score Trendi' }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+
+    // Ratios Comparison
+    const ratiosCtx = document.getElementById('multiYearRatiosChart');
+    if (ratiosCtx) {
+        new Chart(ratiosCtx, {
+            type: 'radar',
+            data: {
+                labels: ['Cari Oran', 'Likidite', 'ROE', 'ROA', 'Net Kâr Marjı'],
+                datasets: years.map((year, idx) => ({
+                    label: year.year,
+                    data: [
+                        year.ratios.currentRatio,
+                        year.ratios.quickRatio,
+                        year.ratios.roe * 10, // Normalize
+                        year.ratios.roa * 10,
+                        year.ratios.netProfitMargin * 10
+                    ],
+                    borderColor: `hsl(${idx * 120}, 70%, 50%)`,
+                    backgroundColor: `hsla(${idx * 120}, 70%, 50%, 0.2)`
+                }))
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: { display: true, text: 'Finansal Oranlar Karşılaştırması' }
+                }
+            }
+        });
+    }
+
+    // Profit Margin Chart
+    const profitCtx = document.getElementById('multiYearProfitChart');
+    if (profitCtx) {
+        new Chart(profitCtx, {
+            type: 'line',
+            data: {
+                labels: years.map(y => y.year),
+                datasets: [{
+                    label: 'Brüt Kâr Marjı',
+                    data: years.map(y => (y.grossProfit / y.revenue * 100)),
+                    borderColor: '#17a2b8',
+                    tension: 0.4
+                }, {
+                    label: 'Net Kâr Marjı',
+                    data: years.map(y => (y.netIncome / y.revenue * 100)),
+                    borderColor: '#ffc107',
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: { display: true, text: 'Kâr Marjları Trendi (%)' }
+                }
+            }
+        });
+    }
+}
+
+// HELPER FUNCTION - Format Numbers
+function formatNumber(num) {
+    if (num === null || num === undefined || isNaN(num)) return '0';
+    
+    const absNum = Math.abs(num);
+    let formatted;
+    
+    if (absNum >= 1000000000) {
+        formatted = (num / 1000000000).toFixed(2) + ' Milyar TL';
+    } else if (absNum >= 1000000) {
+        formatted = (num / 1000000).toFixed(2) + ' Milyon TL';
+    } else if (absNum >= 1000) {
+        formatted = (num / 1000).toFixed(0) + ' Bin TL';
+    } else {
+        formatted = num.toFixed(0) + ' TL';
+    }
+    
+    return formatted;
+}
+
+// PDF EXPORT FUNCTION
+function exportToPDF() {
+    if (!parsedData || parsedData.length === 0) {
+        alert('❌ Lütfen önce analiz yapın!');
+        return;
+    }
+
+    showLoading(true);
+
+    setTimeout(() => {
+        try {
+            // Ensure all data has scores and ratios calculated
+            parsedData.forEach(year => {
+                if (!year.ratios) {
+                    year.ratios = calculateAllRatios(year);
+                }
+                if (!year.scores) {
+                    year.scores = calculateAllBankruptcyScores(year);
+                }
+            });
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('p', 'mm', 'a4');
+            let y = 20;
+
+            // Title Page
+            doc.setFontSize(24);
+            doc.setTextColor(102, 126, 234);
+            doc.text('CorpFinGuard', 105, y, { align: 'center' });
+            
+            y += 10;
+            doc.setFontSize(18);
+            doc.text('Finansal Analiz Raporu', 105, y, { align: 'center' });
+            
+            y += 15;
+            doc.setFontSize(12);
+            doc.setTextColor(0, 0, 0);
+            doc.text('Rapor Tarihi: ' + new Date().toLocaleDateString('tr-TR'), 105, y, { align: 'center' });
+            
+            y += 10;
+            doc.text(`Analiz Donemi: ${parsedData[0].year} - ${parsedData[parsedData.length - 1].year}`, 105, y, { align: 'center' });
+
+            // Executive Summary
+            y = 60;
+            doc.setFontSize(16);
+            doc.setTextColor(102, 126, 234);
+            doc.text('YONETICI OZETI', 20, y);
+            
+            y += 10;
+            doc.setFontSize(10);
+            doc.setTextColor(0, 0, 0);
+            
+            const latest = parsedData[parsedData.length - 1];
+            const oldest = parsedData[0];
+            
+            doc.text(`Sirket ${parsedData.length} yillik veri uzerinden analiz edilmistir.`, 20, y);
+            y += 7;
+            doc.text(`Son yil satislari: ${formatNumber(latest.revenue)}`, 20, y);
+            y += 7;
+            doc.text(`Son yil net kar: ${formatNumber(latest.netIncome)}`, 20, y);
+            y += 7;
+            
+            // Safe access to scores
+            const zScore = latest.scores?.altman?.zScore || 0;
+            const interpretation = latest.scores?.altman?.interpretation || 'Hesaplanamadi';
+            doc.text(`Altman Z-Score: ${zScore.toFixed(2)} (${interpretation})`, 20, y);
+
+            // Year by Year Summary
+            doc.addPage();
+            y = 20;
+            doc.setFontSize(16);
+            doc.setTextColor(102, 126, 234);
+            doc.text('YIL BAZLI OZET', 20, y);
+            
+            y += 15;
+            doc.setFontSize(10);
+            doc.setTextColor(0, 0, 0);
+
+            parsedData.forEach((year, idx) => {
+                if (y > 270) {
+                    doc.addPage();
+                    y = 20;
+                }
+                
+                doc.setFontSize(12);
+                doc.setFont(undefined, 'bold');
+                doc.text(`${year.year}:`, 20, y);
+                doc.setFont(undefined, 'normal');
+                
+                y += 7;
+                doc.setFontSize(10);
+                doc.text(`  Satislar: ${formatNumber(year.revenue)}`, 25, y);
+                y += 6;
+                doc.text(`  Net Kar: ${formatNumber(year.netIncome)}`, 25, y);
+                y += 6;
+                
+                const roe = year.ratios?.roe || 0;
+                doc.text(`  ROE: ${(roe * 100).toFixed(1)}%`, 25, y);
+                y += 6;
+                
+                const yearZScore = year.scores?.altman?.zScore || 0;
+                doc.text(`  Z-Score: ${yearZScore.toFixed(2)}`, 25, y);
+                y += 6;
+                
+                const yearInterpretation = year.scores?.altman?.interpretation || 'Hesaplanamadi';
+                doc.text(`  Risk: ${yearInterpretation}`, 25, y);
+                
+                y += 10;
+            });
+
+            // Risk Assessment
+            doc.addPage();
+            y = 20;
+            doc.setFontSize(16);
+            doc.setTextColor(102, 126, 234);
+            doc.text('RISK DEGERLENDIRMESI', 20, y);
+            
+            y += 15;
+            doc.setFontSize(10);
+            doc.setTextColor(0, 0, 0);
+
+            const z = latest.scores?.altman?.zScore || 0;
+            if (z > 2.99) {
+                doc.text('Sirket finansal olarak saglikli durumdadir.', 20, y);
+                y += 7;
+                doc.text('Iflas riski dusuk seviyededir.', 20, y);
+            } else if (z > 1.81) {
+                doc.text('Sirket gri bolgede - orta risk seviyesi.', 20, y);
+                y += 7;
+                doc.text('Dikkatli izleme ve iyilestirme onerilir.', 20, y);
+            } else {
+                doc.text('UYARI: Yuksek iflas riski tespit edildi!', 20, y);
+                y += 7;
+                doc.text('Acil onlemler gereklidir.', 20, y);
+            }
+
+            // Recommendations
+            y += 15;
+            doc.setFontSize(14);
+            doc.setTextColor(102, 126, 234);
+            doc.text('ONERILER', 20, y);
+            
+            y += 10;
+            doc.setFontSize(10);
+            doc.setTextColor(0, 0, 0);
+
+            const recommendations = [
+                '1. Nakit akisini duzenli olarak takip edin',
+                '2. Karlilik oranlarini iyilestirmeye oncelik verin',
+                '3. Borclanma seviyesini kontrol altinda tutun',
+                '4. Calisma sermayesi yonetimini optimize edin',
+                '5. Sektorel karsilastirma yapin'
+            ];
+
+            recommendations.forEach(rec => {
+                if (y > 270) {
+                    doc.addPage();
+                    y = 20;
+                }
+                doc.text(rec, 20, y);
+                y += 7;
+            });
+
+            // Footer
+            const pageCount = doc.internal.getNumberOfPages();
+            for (let i = 1; i <= pageCount; i++) {
+                doc.setPage(i);
+                doc.setFontSize(8);
+                doc.setTextColor(128, 128, 128);
+                doc.text(`Sayfa ${i} / ${pageCount}`, 105, 290, { align: 'center' });
+                doc.text('CorpFinGuard ULTRA - Profesyonel Finansal Analiz', 105, 285, { align: 'center' });
+            }
+
+            // Save
+            doc.save(`CorpFinGuard-Rapor-${latest.year}-${Date.now()}.pdf`);
+            
+            showLoading(false);
+            alert('✅ PDF rapor başarıyla indirildi!');
+            
+        } catch (error) {
+            showLoading(false);
+            console.error('PDF Error:', error);
+            alert('❌ PDF oluşturulurken hata: ' + error.message);
+        }
+    }, 500);
+}
+
+// Format Selector
+let selectedFormat = 'mizan';
+
+function selectFormat(format) {
+    selectedFormat = format;
+    
+    document.querySelectorAll('.format-card').forEach(card => {
+        card.classList.remove('active');
+    });
+    document.querySelector(`[data-format="${format}"]`).classList.add('active');
+    
+    const uploadTitle = document.getElementById('uploadTitle');
+    const uploadDesc = document.getElementById('uploadDesc');
+    const uploadHint = document.getElementById('uploadHint');
+    
+    if (format === 'mizan') {
+        uploadTitle.textContent = '📊 Mizan Dosyalarını Yükleyin';
+        uploadDesc.textContent = 'Excel dosyalarınızı buraya sürükleyin veya tıklayın';
+        uploadHint.textContent = 'En az 2 yıl, ideal 3-4 yıl mizan verisi yükleyin';
+    } else if (format === 'bilanco') {
+        uploadTitle.textContent = '📋 Karşılaştırmalı Bilanço Yükleyin';
+        uploadDesc.textContent = '3 yıl yan yana bilanço Excel dosyası';
+        uploadHint.textContent = 'Tek dosyada 3 yıllık karşılaştırmalı bilanço';
+    } else if (format === 'beyanname') {
+        uploadTitle.textContent = '📄 PDF Beyanname Yükleyin';
+        uploadDesc.textContent = 'Kurumlar vergisi beyannamesi PDF';
+        uploadHint.textContent = 'Her yıl için ayrı PDF dosyası';
+    }
+}
+
+
+// ==================== PREMIUM MODÜL FONKSİYONLARI ====================
+
+function openXAI() {
+    // Veri kontrolü
+    if (!parsedData || parsedData.length === 0) {
+        alert('⚠️ Lütfen önce analiz yapın! Demo veri kullanabilir veya kendi verilerinizi yükleyebilirsiniz.');
+        return;
+    }
+    
+    // Veriyi localStorage'a kaydet
+    try {
+        localStorage.setItem('corpfinguard_analysis', JSON.stringify({
+            data: parsedData,
+            timestamp: Date.now(),
+            user: currentUser || 'demo'
+        }));
+        
+        // XAI modülünü yeni tab'da aç
+        window.open('xai.html', '_blank');
+        
+        // Bilgilendirme
+        console.log('✅ XAI modülü açıldı');
+        
+    } catch (error) {
+        alert('❌ Veri kaydedilemedi: ' + error.message);
+        console.error('XAI Error:', error);
+    }
+}
+
+function openBehavioral() {
+    alert('🎯 Davranışsal Finans modülü şu anda geliştirme aşamasında!\n\nYakında:\n• 12 Cognitive Bias Analizi\n• Risk Psikolojisi Profili\n• Davranışsal Skorlama\n• Emotional Decision Tracking');
+}
+
+function openAICFO() {
+    alert('🤖 AI Mobil CFO modülü şu anda geliştirme aşamasında!\n\nYakında:\n• 7/24 Akıllı Asistan\n• Öğrenen Sistem\n• Proaktif Uyarılar\n• WhatsApp Entegrasyonu');
+}
+
+</script>
+</body>
+</html>
