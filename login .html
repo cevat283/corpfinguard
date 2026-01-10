@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CorpFinGuard - Giriş Yap</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+            max-width: 1000px;
+            width: 100%;
+            display: flex;
+        }
+
+        .login-left {
+            flex: 1;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 60px 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .login-left h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+
+        .login-left p {
+            font-size: 1.1em;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+
+        .feature {
+            display: flex;
+            align-items: center;
+            margin: 15px 0;
+            font-size: 0.95em;
+        }
+
+        .feature-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 1.3em;
+        }
+
+        .login-right {
+            flex: 1;
+            padding: 60px 40px;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .login-header h2 {
+            color: #2c3e50;
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .login-header p {
+            color: #6c757d;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #2c3e50;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .remember-forgot {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            font-size: 14px;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            color: #6c757d;
+        }
+
+        .remember-me input {
+            margin-right: 8px;
+            cursor: pointer;
+        }
+
+        .forgot-password {
+            color: #667eea;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .forgot-password:hover {
+            color: #764ba2;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .demo-btn {
+            width: 100%;
+            padding: 15px;
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.3s;
+        }
+
+        .demo-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .divider {
+            text-align: center;
+            margin: 25px 0;
+            color: #6c757d;
+            position: relative;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 40%;
+            height: 1px;
+            background: #e0e0e0;
+        }
+
+        .divider::before {
+            left: 0;
+        }
+
+        .divider::after {
+            right: 0;
+        }
+
+        .signup-link {
+            text-align: center;
+            margin-top: 25px;
+            color: #6c757d;
+        }
+
+        .signup-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .signup-link a:hover {
+            color: #764ba2;
+        }
+
+        .alert {
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .alert-danger {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        @media (max-width: 768px) {
+            .login-container {
+                flex-direction: column;
+            }
+
+            .login-left {
+                padding: 40px 30px;
+            }
+
+            .login-right {
+                padding: 40px 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-left">
+            <h1>🛡️ CorpFinGuard</h1>
+            <p>Türkiye'nin en gelişmiş finansal analiz ve risk yönetim platformu</p>
+            
+            <div class="feature">
+                <div class="feature-icon">📊</div>
+                <span>40+ Finansal Oran Analizi</span>
+            </div>
+            
+            <div class="feature">
+                <div class="feature-icon">⚠️</div>
+                <span>7 İflas Tahmin Modeli</span>
+            </div>
+            
+            <div class="feature">
+                <div class="feature-icon">🔍</div>
+                <span>Benford's Law Hile Tespiti</span>
+            </div>
+            
+            <div class="feature">
+                <div class="feature-icon">🏦</div>
+                <span>Basel III & BDDK Uyumlu</span>
+            </div>
+            
+            <div class="feature">
+                <div class="feature-icon">📋</div>
+                <span>TFRS 9 Kredi Risk Analizi</span>
+            </div>
+            
+            <div class="feature">
+                <div class="feature-icon">🎯</div>
+                <span>DuPont & Değerleme Modelleri</span>
+            </div>
+        </div>
+
+        <div class="login-right">
+            <div class="login-header">
+                <h2>Hoş Geldiniz</h2>
+                <p>Hesabınıza giriş yapın</p>
+            </div>
+
+            <div id="alertBox" class="alert"></div>
+
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="email">E-posta</label>
+                    <input type="email" id="email" placeholder="ornek@firma.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Şifre</label>
+                    <input type="password" id="password" placeholder="••••••••" required>
+                </div>
+
+                <div class="remember-forgot">
+                    <label class="remember-me">
+                        <input type="checkbox" id="rememberMe">
+                        <span>Beni Hatırla</span>
+                    </label>
+                    <a href="#" class="forgot-password">Şifremi Unuttum?</a>
+                </div>
+
+                <button type="submit" class="login-btn">Giriş Yap</button>
+            </form>
+
+            <div class="divider">veya</div>
+
+            <button class="demo-btn" onclick="openDemo()">
+                🚀 Demo ile Deneyin (Kayıt Gerektirmez)
+            </button>
+
+            <div class="signup-link">
+                Hesabınız yok mu? <a href="signup.html">Ücretsiz Kayıt Olun</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Test hesapları (production'da backend'e taşınacak)
+        const testAccounts = [
+            { email: 'demo@corpfinguard.com', password: 'demo123', name: 'Demo Kullanıcı' },
+            { email: 'test@test.com', password: 'test123', name: 'Test Kullanıcı' }
+        ];
+
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const rememberMe = document.getElementById('rememberMe').checked;
+            
+            // Test hesabı kontrolü
+            const user = testAccounts.find(acc => acc.email === email && acc.password === password);
+            
+            if (user) {
+                // Session oluştur
+                const session = {
+                    email: user.email,
+                    name: user.name,
+                    loginTime: new Date().toISOString(),
+                    isPremium: true
+                };
+                
+                if (rememberMe) {
+                    localStorage.setItem('corpfinguard_session', JSON.stringify(session));
+                } else {
+                    sessionStorage.setItem('corpfinguard_session', JSON.stringify(session));
+                }
+                
+                showAlert('✅ Giriş başarılı! Yönlendiriliyorsunuz...', 'success');
+                
+                setTimeout(() => {
+                    window.location.href = 'dashboard.html';
+                }, 1000);
+            } else {
+                showAlert('❌ E-posta veya şifre hatalı!', 'danger');
+            }
+        });
+
+        function openDemo() {
+            // Demo session oluştur
+            const demoSession = {
+                email: 'demo@demo.com',
+                name: 'Demo Kullanıcı',
+                loginTime: new Date().toISOString(),
+                isPremium: false,
+                isDemo: true
+            };
+            
+            sessionStorage.setItem('corpfinguard_session', JSON.stringify(demoSession));
+            window.location.href = 'dashboard.html';
+        }
+
+        function showAlert(message, type) {
+            const alertBox = document.getElementById('alertBox');
+            alertBox.textContent = message;
+            alertBox.className = 'alert alert-' + type;
+            alertBox.style.display = 'block';
+            
+            if (type === 'success') {
+                setTimeout(() => {
+                    alertBox.style.display = 'none';
+                }, 3000);
+            }
+        }
+
+        // Eğer zaten giriş yapılmışsa
+        window.addEventListener('DOMContentLoaded', function() {
+            const session = localStorage.getItem('corpfinguard_session') || 
+                          sessionStorage.getItem('corpfinguard_session');
+            
+            if (session) {
+                window.location.href = 'dashboard.html';
+            }
+        });
+    </script>
+</body>
+</html>
