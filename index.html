@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Corpfinguard - Finansal Risk Analiz Platformu | AI Destekli İflas Tahmini</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Şirketiniz iflas riskinde mi? 5 dakikada öğrenin! AI destekli finansal risk analizi, iflas tahmini, fraud tespiti.">
+    <meta name="keywords" content="finansal analiz, risk yönetimi, iflas tahmini, altman z-score, mali analiz, KOBİ, Türkiye">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="Corpfinguard - Şirketiniz İflas Riskinde mi?">
+    <meta property="og:description" content="5 dakikada finansal sağlığınızı öğrenin. İflas riski, fraud tespiti, AI destekli analiz.">
+    <meta property="og:url" content="https://corpfinguard.com">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        /* Header */
+        .header {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #666;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #667eea;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 28px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 700;
+            transition: transform 0.3s, box-shadow 0.3s;
+            display: inline-block;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+
+        /* Hero */
+        .hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 100px 20px;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 56px;
+            font-weight: 900;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+
+        .hero p {
+            font-size: 24px;
+            margin-bottom: 40px;
+            opacity: 0.95;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-large {
+            padding: 18px 40px;
+            font-size: 18px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 700;
+            transition: all 0.3s;
+        }
+
+        .btn-white {
+            background: white;
+            color: #667eea;
+        }
+
+        .btn-white:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 40px rgba(255,255,255,0.3);
+        }
+
+        .btn-demo {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            border: none;
+        }
+
+        .btn-demo:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 40px rgba(40, 167, 69, 0.4);
+        }
+
+        /* Stats */
+        .stats {
+            max-width: 1200px;
+            margin: -50px auto 0;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .stat-number {
+            font-size: 48px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-label {
+            color: #666;
+            margin-top: 10px;
+        }
+
+        /* Features */
+        .section {
+            max-width: 1200px;
+            margin: 100px auto;
+            padding: 0 20px;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 42px;
+            font-weight: 900;
+            margin-bottom: 60px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .feature-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        .feature-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .feature-desc {
+            color: #666;
+            line-height: 1.8;
+        }
+
+        /* Dashboard Preview */
+        .dashboard-preview {
+            background: #f8f9fa;
+            padding: 100px 20px;
+        }
+
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .dashboard-img {
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            margin-bottom: 40px;
+        }
+
+        .dashboard-img img {
+            width: 100%;
+            display: block;
+        }
+
+        /* Pricing */
+        .pricing {
+            background: #f8f9fa;
+            padding: 100px 20px;
+        }
+
+        .pricing-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .pricing-card {
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            text-align: center;
+            position: relative;
+        }
+
+        .pricing-card.featured {
+            border: 3px solid #667eea;
+            transform: scale(1.05);
+        }
+
+        .badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 700;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        .plan-name {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .plan-price {
+            font-size: 48px;
+            font-weight: 900;
+            margin: 20px 0;
+        }
+
+        .plan-price small {
+            font-size: 18px;
+            color: #666;
+        }
+
+        .old-price {
+            text-decoration: line-through;
+            color: #999;
+            font-size: 24px;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .plan-features {
+            list-style: none;
+            margin: 30px 0;
+            text-align: left;
+        }
+
+        .plan-features li {
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .plan-features li:before {
+            content: "✓ ";
+            color: #28a745;
+            font-weight: 700;
+            margin-right: 10px;
+        }
+
+        /* Contact */
+        .contact {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 100px 20px;
+            text-align: center;
+        }
+
+        .contact h2 {
+            font-size: 42px;
+            margin-bottom: 20px;
+        }
+
+        .contact p {
+            font-size: 20px;
+            margin-bottom: 40px;
+        }
+
+        .contact-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-contact {
+            background: white;
+            color: #667eea;
+            padding: 18px 40px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 18px;
+            transition: all 0.3s;
+        }
+
+        .btn-contact:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(255,255,255,0.3);
+        }
+
+        /* Footer */
+        .footer {
+            background: #1a1a1a;
+            color: white;
+            padding: 60px 20px 20px;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer-section h3 {
+            margin-bottom: 20px;
+        }
+
+        .footer-section a {
+            color: #ccc;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 10px;
+            transition: color 0.3s;
+        }
+
+        .footer-section a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid #333;
+            color: #999;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 36px;
+            }
+            .hero p {
+                font-size: 18px;
+            }
+            .section-title {
+                font-size: 32px;
+            }
+            .nav-links {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav">
+            <div class="logo">Corpfinguard</div>
+            <div class="nav-links">
+                <a href="#features">Özellikler</a>
+                <a href="#pricing">Fiyatlar</a>
+                <a href="app.html">Demo</a>
+                <a href="#contact">İletişim</a>
+                <a href="login.html">Giriş Yap</a>
+                <a href="signup.html" class="btn-primary">Abone Ol</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero -->
+    <section class="hero">
+        <h1>Şirketiniz İflas Riskinde mi?<br>5 Dakikada Öğrenin!</h1>
+        <p>AI ile finansal tabloları analiz edin, iflas ve fraud riskini tespit edin, bankalar için rapor hazırlayın</p>
+        <div class="cta-buttons">
+            <a href="signup.html" class="btn-large btn-white">🚀 Hemen Abone Ol</a>
+            <a href="app.html" class="btn-large btn-demo">🎭 Canlı Demo - Hemen Dene!</a>
+            <a href="login.html" class="btn-large" style="background: #6c757d; color: white; border: none;">🔐 Giriş Yap (Beta)</a>
+        </div>
+    </section>
+
+    <!-- Stats -->
+    <div class="stats">
+        <div class="stat-card">
+            <div class="stat-number">5dk</div>
+            <div class="stat-label">Ortalama Analiz Süresi</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">95%</div>
+            <div class="stat-label">Tahmin Doğruluğu</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">7</div>
+            <div class="stat-label">İflas Modeli</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">40+</div>
+            <div class="stat-label">Finansal Oran</div>
+        </div>
+    </div>
+
+    <!-- Features -->
+    <section class="section" id="features">
+        <h2 class="section-title">Neden Corpfinguard?</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3 class="feature-title">Hızlı Analiz</h3>
+                <p class="feature-desc">Excel dosyanızı yükleyin, 5 dakika içinde detaylı rapor alın. Manuel analiz saatleri yerine dakikalar.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🎯</div>
+                <h3 class="feature-title">7 İflas Modeli</h3>
+                <p class="feature-desc">Altman Z-Score, Springate, Zmijewski ve 4 model daha. Çoklu model ile en doğru tahmini yapın.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔍</div>
+                <h3 class="feature-title">Fraud Detection</h3>
+                <p class="feature-desc">Beneish M-Score ile finansal tablo manipülasyonunu tespit edin. Hileli raporlamayı önceden görün.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h3 class="feature-title">40+ Finansal Oran</h3>
+                <p class="feature-desc">Likidite, karlılık, faaliyet, kaldıraç oranları. Detaylı DuPont analizi ve trend grafikleri.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🤖</div>
+                <h3 class="feature-title">AI Tahminleme</h3>
+                <p class="feature-desc">Yapay zeka ile gelecek dönem tahminleri. Nakit akışı projeksiyonları ve senaryo analizleri.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📄</div>
+                <h3 class="feature-title">Profesyonel Raporlar</h3>
+                <p class="feature-desc">Bankalara, yönetim kurullarına sunuma hazır PDF raporlar. Grafikler ve detaylı açıklamalar.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🧠</div>
+                <h3 class="feature-title">XAI - Açıklanabilir AI</h3>
+                <p class="feature-desc">Yapay zekanın kararlarını anlayın. Her tahmin için detaylı açıklama, şeffaf analiz, davranışsal finans prensipleri.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🎯</div>
+                <h3 class="feature-title">Davranışsal Finans</h3>
+                <p class="feature-desc">Psikolojik faktörleri analiz eder, insan önyargılarını tespit eder, daha bilinçli karar almanızı sağlar.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔮</div>
+                <h3 class="feature-title">Gelecek Vizyonu</h3>
+                <p class="feature-desc">Logo/e-Defter entegrasyonu, sektör karşılaştırma, real-time monitoring - sürekli gelişen platform.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Dashboard Preview -->
+    <section class="dashboard-preview">
+        <div class="dashboard-container">
+            <h2 class="section-title">📊 Dashboard Görünümü</h2>
+            <p style="text-align: center; color: #666; font-size: 18px; margin-bottom: 50px;">
+                Profesyonel analizler, detaylı raporlar, görsel grafikler
+            </p>
+            <div class="dashboard-img">
+                <!-- Screenshot eklenecek -->
+                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 100px; text-align: center; color: white;">
+                    <h3 style="font-size: 32px; margin-bottom: 20px;">📸 Dashboard Screenshot</h3>
+                    <p style="font-size: 18px; opacity: 0.9;">Yakında eklenecek</p>
+                    <p style="font-size: 14px; opacity: 0.7; margin-top: 10px;">Demo'yu deneyerek şimdi görebilirsiniz!</p>
+                </div>
+            </div>
+            <div style="text-align: center;">
+                <a href="app.html" class="btn-primary" style="padding: 18px 40px; font-size: 18px;">
+                    🎭 Demo'yu Hemen Deneyin
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing -->
+    <section class="pricing" id="pricing">
+        <h2 class="section-title">Fiyatlandırma</h2>
+        <div class="pricing-grid">
+            <div class="pricing-card">
+                <h3 class="plan-name">Demo</h3>
+                <div class="plan-price">₺0</div>
+                <ul class="plan-features">
+                    <li>3 demo senaryo</li>
+                    <li>Temel özellikler</li>
+                    <li>Sınırlı raporlar</li>
+                    <li>Özellikleri test et</li>
+                </ul>
+                <a href="app.html" class="btn-primary">Demo Dene</a>
+            </div>
+
+            <div class="pricing-card featured">
+                <div class="badge">🎁 BETA KAMPANYASI - İlk 50 Müşteri</div>
+                <h3 class="plan-name">Professional</h3>
+                <span class="old-price">₺3,999/ay</span>
+                <div class="plan-price">₺1,999<small>/ay</small></div>
+                <p style="color: #28a745; font-weight: 700; margin: 10px 0;">%50 İNDİRİM - İlk 6 ay</p>
+                <p style="color: #666; font-size: 14px;">Sonrası: ₺2,999/ay (ömür boyu)</p>
+                <ul class="plan-features">
+                    <li>Sınırsız analiz</li>
+                    <li>Excel upload</li>
+                    <li>7 iflas modeli</li>
+                    <li>Fraud detection</li>
+                    <li>40+ finansal oran</li>
+                    <li>AI tahminleme</li>
+                    <li>PDF raporlar</li>
+                    <li>Email destek</li>
+                    <li>Logo'nuz web sitesinde</li>
+                </ul>
+                <a href="signup.html" class="btn-primary">Hemen Abone Ol</a>
+            </div>
+
+            <div class="pricing-card">
+                <h3 class="plan-name">Enterprise</h3>
+                <div class="plan-price">Özel</div>
+                <ul class="plan-features">
+                    <li>Tüm Professional özellikler</li>
+                    <li>Sınırsız kullanıcı</li>
+                    <li>API entegrasyonu</li>
+                    <li>White label</li>
+                    <li>Özel eğitim</li>
+                    <li>Öncelikli destek</li>
+                    <li>SLA garantisi</li>
+                    <li>Dedicated server</li>
+                </ul>
+                <a href="signup.html" class="btn-primary">Teklif Al</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact -->
+    <section class="contact" id="contact">
+        <h2>Hemen Başlayın</h2>
+        <p>Beta programımıza katılın, ilk 50 müşteriden biri olun!</p>
+        <div class="contact-buttons">
+            <a href="signup.html" class="btn-contact">
+                🚀 Abone Ol
+            </a>
+            <a href="login.html" class="btn-contact">
+                🔐 Giriş Yap
+            </a>
+            <a href="/cdn-cgi/l/email-protection#7a13141c153a1915080a1c13141d0f1b081e54191517" class="btn-contact">
+                📧 <span class="__cf_email__" data-cfemail="2b42454d446b4844595b4d42454c5e4a594f05484446">[email&#160;protected]</span>
+            </a>
+            <a href="app.html" class="btn-contact">
+                🎭 Demo'yu Dene
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Corpfinguard</h3>
+                <p>AI destekli finansal risk analiz platformu</p>
+                <p style="margin-top: 20px;">
+                    <strong>İletişim:</strong><br>
+                    <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="026b6c646d42616d7072646b6c65776370662c616d6f">[email&#160;protected]</a>
+                </p>
+            </div>
+            <div class="footer-section">
+                <h3>Ürün</h3>
+                <a href="#features">Özellikler</a>
+                <a href="#pricing">Fiyatlar</a>
+                <a href="app.html">Demo</a>
+                <a href="signup.html">Abone Ol</a>
+            </div>
+            <div class="footer-section">
+                <h3>Şirket</h3>
+                <a href="/cdn-cgi/l/email-protection#9af3f4fcf5daf9f5e8eafcf3f4fdeffbe8feb4f9f5f7">İletişim</a>
+                <a href="#">Gizlilik Politikası</a>
+                <a href="#">Kullanım Şartları</a>
+            </div>
+            <div class="footer-section">
+                <h3>Destek</h3>
+     
