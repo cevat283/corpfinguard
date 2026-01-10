@@ -1,0 +1,26 @@
+{
+  "name": "corpfinguard",
+  "version": "1.0.0",
+  "description": "Yapay Zeka Destekli Finansal Risk Analiz Platformu",
+  "main": "index.html",
+  "scripts": {
+    "start": "python -m http.server 8000",
+    "dev": "python -m http.server 3000",
+    "build": "echo 'No build required for static HTML'",
+    "test": "echo 'No tests configured'"
+  },
+  "keywords": [
+    "finansal",
+    "risk",
+    "analiz",
+    "yapay-zeka",
+    "iflas",
+    "fraud"
+  ],
+  "author": "CorpFinGuard Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/YOUR_USERNAME/corpfinguard.git"
+  }
+}
