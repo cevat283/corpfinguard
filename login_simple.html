@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CorpFinGuard - Giriş</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px;
+        }
+        .login-box {
+            background: white; padding: 40px; border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3); max-width: 400px; width: 100%;
+        }
+        h1 { text-align: center; color: #667eea; margin-bottom: 10px; font-size: 2em; }
+        p { text-align: center; color: #6c757d; margin-bottom: 30px; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; color: #2c3e50; font-weight: 500; margin-bottom: 8px; }
+        input { width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 15px; transition: border-color 0.3s; }
+        input:focus { outline: none; border-color: #667eea; box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1); }
+        input:invalid { border-color: #dc3545; }
+        button {
+            width: 100%; padding: 15px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; margin-bottom: 10px;
+            transition: opacity 0.3s, transform 0.2s;
+        }
+        button:hover:not(:disabled) { opacity: 0.9; transform: translateY(-2px); }
+        button:disabled { opacity: 0.6; cursor: not-allowed; }
+        .demo-btn { background: linear-gradient(135deg, #28a745 0%, #20c997 100%); }
+        .info { background: #e7f1ff; padding: 15px; border-radius: 8px; margin-bottom: 20px; font-size: 14px; border-left: 4px solid #667eea; }
+        .info strong { display: block; margin-bottom: 5px; color: #667eea; }
+        .signup-link { text-align: center; margin-top: 15px; font-size: 14px; color: #6c757d; }
+        .signup-link a { color: #667eea; text-decoration: none; font-weight: 600; }
+        .signup-link a:hover { text-decoration: underline; }
+        .alert { padding: 12px 15px; border-radius: 8px; margin-bottom: 20px; display: none; border-left: 4px solid; }
+        .alert-danger { background: #f8d7da; color: #721c24; border-left-color: #dc3545; }
+        .alert-success { background: #d4edda; color: #155724; border-left-color: #28a745; }
+        .alert-info { background: #d1ecf1; color: #0c5460; border-left-color: #17a2b8; }
+        .loading-spinner { display: none; text-align: center; margin: 20px 0; }
+        .spinner { border: 3px solid #f3f3f3; border-top: 3px solid #667eea; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; margin: 0 auto; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .forgot-password { text-align: right; margin-top: 10px; }
+        .forgot-password a { color: #667eea; text-decoration: none; font-size: 13px; }
+        .forgot-password a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="login-box">
+        <h1>🛡️ CorpFinGuard</h1>
+        <p>Giriş Yapın</p>
+        
+        <div id="alertBox" class="alert"></div>
+        
+        <div class="info">
+            <strong>📋 Test Hesapları:</strong>
+            E-posta: test@test.com<br>
+            Şifre: test123
+        </div>
+        
+        <form id="loginForm" novalidate>
+            <div class="form-group">
+                <label for="email">E-posta <span style="color: #dc3545;">*</span></label>
+                <input type="email" id="email" placeholder="ornek@firma.com" required aria-label="E-posta adresi">
+            </div>
+            <div class="form-group">
+                <label for="password">Şifre <span style="color: #dc3545;">*</span></label>
+                <input type="password" id="password" placeholder="Şifrenizi girin" required aria-label="Şifre">
+                <div class="forgot-password">
+                    <a href="#" onclick="showForgotPassword(event)">Şifrenizi mi unuttunuz?</a>
+                </div>
+            </div>
+            <button type="submit" id="loginBtn">🚀 Giriş Yap</button>
+        </form>
+        
+        <div class="loading-spinner" id="loadingSpinner">
+            <div class="spinner"></div>
+            <p style="margin-top: 10px; color: #667eea; font-size: 14px;">Giriş yapılıyor...</p>
+        </div>
+        
+        <button class="demo-btn" onclick="goDemoMode()" id="demoBtn">🎭 Demo Modu (Kayıt Gerektirmez)</button>
+        
+        <div class="signup-link">
+            Hesabınız yok mu? <a href="signup.html">Kayıt Olun</a>
+        </div>
+    </div>
+
+    <script>
+        // ============= GÜVENLIK: CSRF Token Oluştur =============
+        function generateCSRFToken() {
+            const token = Array.from(crypto.getRandomValues(new Uint8Array(32)))
+                .map(b => b.toString(16).padStart(2, '0'))
+                .join('');
+            sessionStorage.setItem('csrf_token', token);
+            return token;
+        }
+
+        // ============= GÜVENLIK: Input Sanitization =============
+        function sanitizeInput(input) {
+            const div = document.createElement('div');
+            div.textContent = input;
+            return div.innerHTML;
+        }
+
+        // ============= GÜVENLIK: Email Validasyonu =============
+        function isValidEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email) && email.length <= 254;
+        }
+
+        // ============= GÜVENLIK: Şifre Validasyonu =============
+        function isValidPassword(password) {
+            return password && password.length >= 6 && password.length <= 128;
+        }
+
+        // ============= UI: Alert Göster =============
+        function showAlert(message, type = 'danger') {
+            const alertBox = document.getElementById('alertBox');
+            alertBox.textContent = message;
+            alertBox.className = 'alert alert-' + type;
+            alertBox.style.display = 'block';
+            
+            // 5 saniye sonra otomatik gizle
+            setTimeout(() => {
+                alertBox.style.display = 'none';
+            }, 5000);
+        }
+
+        // ============= UI: Loading State =============
+        function setLoading(isLoading) {
+            const spinner = document.getElementById('loadingSpinner');
+            const loginBtn = document.getElementById('loginBtn');
+            const demoBtn = document.getElementById('demoBtn');
+            
+            if (isLoading) {
+                spinner.style.display = 'block';
+                loginBtn.disabled = true;
+                demoBtn.disabled = true;
+            } else {
+                spinner.style.display = 'none';
+                loginBtn.disabled = false;
+                demoBtn.disabled = false;
+            }
+        }
+
+        // ============= GÜVENLIK: Test Hesapları (Hashed) =============
+        // UYARI: Production'da backend API kullanılmalıdır!
+        // Bu sadece demo amaçlıdır. Gerçek şifreler hash'lenmelidir.
+        const DEMO_ACCOUNTS = {
+            'test@test.com': { 
+                name: 'Test Kullanici', 
+                premium: true,
+                // Şifre: test123 (demo amaçlı)
+                passwordHash: 'demo_hash_test123'
+            },
+            'demo@corpfinguard.com': { 
+                name: 'Demo Kullanici', 
+                premium: true,
+                // Şifre: demo123 (demo amaçlı)
+                passwordHash: 'demo_hash_demo123'
+            }
+        };
+
+        // ============= GÜVENLIK: Basit Hash Fonksiyonu (Demo) =============
+        // UYARI: Gerçek uygulamada bcrypt veya argon2 kullanılmalıdır!
+        async function hashPassword(password) {
+            const encoder = new TextEncoder();
+            const data = encoder.encode(password);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return 'demo_hash_' + hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        // ============= Form Gönderimi =============
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            
+            // ============= VALIDASYON =============
+            if (!email || !password) {
+                showAlert('❌ E-posta ve şifre gereklidir!', 'danger');
+                return;
+            }
+            
+            if (!isValidEmail(email)) {
+                showAlert('❌ Geçerli bir e-posta adresi girin!', 'danger');
+                return;
+            }
+            
+            if (!isValidPassword(password)) {
+                showAlert('❌ Şifre 6-128 karakter arasında olmalıdır!', 'danger');
+                return;
+            }
+            
+            // ============= GÜVENLIK: Rate Limiting =============
+            const loginAttempts = JSON.parse(sessionStorage.getItem('login_attempts') || '{}');
+            const now = Date.now();
+            const userAttempts = loginAttempts[email] || [];
+            const recentAttempts = userAttempts.filter(time => now - time < 15 * 60 * 1000); // 15 dakika
+            
+            if (recentAttempts.length >= 5) {
+                showAlert('❌ Çok fazla başarısız giriş denemesi. 15 dakika sonra tekrar deneyin.', 'danger');
+                return;
+            }
+            
+            setLoading(true);
+            
+            try {
+                // Simüle edilmiş API çağrısı (200ms gecikme)
+                await new Promise(resolve => setTimeout(resolve, 200));
+                
+                const account = DEMO_ACCOUNTS[email];
+                
+                if (!account) {
+                    recentAttempts.push(now);
+                    loginAttempts[email] = recentAttempts;
+                    sessionStorage.setItem('login_attempts', JSON.stringify(loginAttempts));
+                    
+                    showAlert('❌ Bu e-posta adresi kayıtlı değil!', 'danger');
+                    setLoading(false);
+                    return;
+                }
+                
+                // Demo: Basit şifre karşılaştırması
+                // Production'da backend hash karşılaştırması yapmalıdır
+                const expectedHash = await hashPassword(password);
+                const isPasswordCorrect = (
+                    (email === 'test@test.com' && password === 'test123') ||
+                    (email === 'demo@corpfinguard.com' && password === 'demo123')
+                );
+                
+                if (!isPasswordCorrect) {
+                    recentAttempts.push(now);
+                    loginAttempts[email] = recentAttempts;
+                    sessionStorage.setItem('login_attempts', JSON.stringify(loginAttempts));
+                    
+                    showAlert('❌ Şifre yanlış!', 'danger');
+                    setLoading(false);
+                    return;
+                }
+                
+                // ============= GÜVENLIK: Session Oluştur (Güvenli) =============
+                const sessionToken = generateCSRFToken();
+                const session = {
+                    email: sanitizeInput(email),
+                    name: sanitizeInput(account.name),
+                    isPremium: account.premium,
+                    isDemo: false,
+                    loginTime: new Date().toISOString(),
+                    sessionToken: sessionToken,
+                    // Session timeout: 24 saat
+                    expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
+                };
+                
+                // SessionStorage'a kaydet (localStorage değil - daha güvenli)
+                sessionStorage.setItem('corpfinguard_session', JSON.stringify(session));
+                
+                // Başarılı giriş - attempt'leri temizle
+                delete loginAttempts[email];
+                sessionStorage.setItem('login_attempts', JSON.stringify(loginAttempts));
+                
+                showAlert('✅ Giriş başarılı! Yönlendiriliyorsunuz...', 'success');
+                
+                // 1 saniye sonra dashboard'a yönlendir
+                setTimeout(() => {
+                    window.location.href = 'dashboard_final.html';
+                }, 1000);
+                
+            } catch (error) {
+                console.error('Giriş hatası:', error);
+                showAlert('❌ Bir hata oluştu. Lütfen tekrar deneyin.', 'danger');
+                setLoading(false);
+            }
+        });
+
+        // ============= Demo Modu =============
+        function goDemoMode() {
+            setLoading(true);
+            
+            try {
+                const sessionToken = generateCSRFToken();
+                const demoSession = {
+                    email: 'demo@demo.com',
+                    name: 'Demo Kullanici',
+                    isPremium: false,
+                    isDemo: true,
+                    loginTime: new Date().toISOString(),
+                    sessionToken: sessionToken,
+                    expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
+                };
+                
+                sessionStorage.setItem('corpfinguard_session', JSON.stringify(demoSession));
+                
+                showAlert('✅ Demo moduna hoş geldiniz! Yönlendiriliyorsunuz...', 'success');
+                
+                setTimeout(() => {
+                    window.location.href = 'dashboard_final.html';
+                }, 1000);
+                
+            } catch (error) {
+                console.error('Demo modu hatası:', error);
+                showAlert('❌ Demo moduna geçiş başarısız oldu.', 'danger');
+                setLoading(false);
+            }
+        }
+
+        // ============= Şifre Sıfırlama (Placeholder) =============
+        function showForgotPassword(e) {
+            e.preventDefault();
+            showAlert('📧 Şifre sıfırlama bağlantısı e-postanıza gönderilecektir. (Yakında)', 'info');
+        }
+
+        // ============= Session Kontrolü =============
+        window.addEventListener('DOMContentLoaded', function() {
+            try {
+                const sessionData = sessionStorage.getItem('corpfinguard_session');
+                
+                if (sessionData) {
+                    const session = JSON.parse(sessionData);
+                    
+                    // Session timeout kontrolü
+                    if (session.expiresAt && new Date(session.expiresAt) < new Date()) {
+                        sessionStorage.removeItem('corpfinguard_session');
+                        showAlert('⏰ Oturumunuz süresi doldu. Lütfen tekrar giriş yapın.', 'info');
+                        return;
+                    }
+                    
+                    // Geçerli session varsa dashboard'a yönlendir
+                    window.location.href = 'dashboard_final.html';
+                }
+            } catch (error) {
+                console.error('Session kontrol hatası:', 
